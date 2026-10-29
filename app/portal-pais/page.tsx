@@ -1,13 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Star, 
   CheckCircle2, 
   QrCode, 
   Copy, 
   MapPin, 
-  Download
+  Download,
+  Flame,
+  ShieldCheck,
+  Award,
+  HeartHandshake,
+  MessageSquareQuote
 } from 'lucide-react';
 import { mockStudents, mockCharges } from '@/lib/mock-data';
 
@@ -15,12 +20,27 @@ export default function PortalPaisPage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string>(mockStudents[0]?.id);
   const [copiedPix, setCopiedPix] = useState(false);
   const [showQrCard, setShowQrCard] = useState(false);
+  const [schoolName, setSchoolName] = useState('Escolinha Pro');
+  const [schoolPix, setSchoolPix] = useState('pix@escolinhapro.com.br');
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('escolinha_pro_settings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.trade_name) setSchoolName(parsed.trade_name);
+        if (parsed.pix_key) setSchoolPix(parsed.pix_key);
+      }
+    } catch {
+      // fallback
+    }
+  }, []);
 
   const student = mockStudents.find(s => s.id === selectedStudentId) || mockStudents[0];
   const charge = mockCharges.find(c => c.student_name.includes(student.full_name)) || mockCharges[2];
 
   const handleCopyPix = () => {
-    navigator.clipboard.writeText('pix@escolinhapro.com.br');
+    navigator.clipboard.writeText(schoolPix);
     setCopiedPix(true);
     setTimeout(() => setCopiedPix(false), 3000);
   };
@@ -34,19 +54,19 @@ export default function PortalPaisPage() {
             <span className="px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
               👨‍👩‍👧 Área da Família
             </span>
-            <span className="text-xs text-slate-400">Portal do Responsável</span>
+            <span className="text-xs text-slate-400">{schoolName}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
             Meu Atleta: {student.full_name} ⚽
           </h1>
           <p className="text-sm text-slate-400">
-            Acompanhe treinos, evolução técnica, frequência e mensalidades do seu filho.
+            Acompanhe a frequência, comportamento, desenvolvimento humano e evolução técnica do seu filho.
           </p>
         </div>
 
-        {/* Seletor de Filho (Se o pai tiver mais de 1 matriculado na escolinha) */}
+        {/* Seletor de Filho */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-1.5 flex gap-1 self-start sm:self-auto">
-          {mockStudents.slice(0, 2).map((s) => (
+          {mockStudents.slice(0, 3).map((s) => (
             <button
               key={s.id}
               onClick={() => setSelectedStudentId(s.id)}
@@ -60,7 +80,7 @@ export default function PortalPaisPage() {
         </div>
       </div>
 
-      {/* Cartão do Atleta & Carteirinha Digital (Estilo Escola Pro) */}
+      {/* Cartão do Atleta & Carteirinha Digital */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Card Principal do Atleta */}
         <div className="md:col-span-2 bg-gradient-to-r from-slate-950 via-slate-950 to-purple-950/40 border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-6">
@@ -80,20 +100,33 @@ export default function PortalPaisPage() {
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
                   {student.player_level}
                 </span>
+                {student.evolution_badge && (
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                    <Award size={12} /> {student.evolution_badge}
+                  </span>
+                )}
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
                 Turma: <strong className="text-slate-200">{student.current_class?.name}</strong> • Posição: <strong className="text-slate-200">{student.position}</strong> ({student.dominant_foot})
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 justify-center sm:justify-start pt-1">
+            <div className="flex flex-wrap items-center gap-2.5 justify-center sm:justify-start pt-1">
               <div className="flex items-center gap-1 text-xs text-amber-400 font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
                 <Star size={14} className="fill-amber-400" />
-                <span>{student.total_points} Pontos ({student.stars_count} estrelas)</span>
+                <span>{student.total_points} Pontos ({student.stars_count} ⭐)</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
                 <CheckCircle2 size={14} />
-                <span>{student.attendance_rate}% de Frequência</span>
+                <span>{student.attendance_rate}% Presença</span>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-rose-400 font-bold bg-rose-500/10 px-2.5 py-1 rounded-lg border border-rose-500/20">
+                <Flame size={14} />
+                <span>{student.presence_streak || 10} Treinos Seguidos</span>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-blue-400 font-bold bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20">
+                <ShieldCheck size={14} />
+                <span>Nota Conduta: {student.behavior_score || 95}/100</span>
               </div>
             </div>
 
@@ -121,7 +154,7 @@ export default function PortalPaisPage() {
 
             <div className="mt-3 p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
               <span className="text-[10px] font-bold text-slate-400 uppercase">Chave PIX da Escolinha</span>
-              <p className="text-xs font-mono text-emerald-400 truncate">pix@escolinhapro.com.br</p>
+              <p className="text-xs font-mono text-emerald-400 truncate">{schoolPix}</p>
             </div>
           </div>
 
@@ -139,11 +172,97 @@ export default function PortalPaisPage() {
         </div>
       </div>
 
+      {/* Painel de Evolução do Aluno: Comportamento, Presença & Parecer do Treinador */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Parecer do Treinador */}
+        <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <MessageSquareQuote size={16} className="text-purple-400" />
+              Parecer Pedagógico do Treinador
+            </h3>
+            <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">
+              Atualizado nesta semana
+            </span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 text-sm text-slate-300 italic leading-relaxed">
+            &ldquo;{student.behavior_notes || 'Demonstra excelente dedicação nas atividades, escuta ativa aos combinados do treino e muita cooperação e respeito com todos os colegas de equipe.'}&rdquo;
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
+            <div className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800 flex items-center gap-2">
+              <HeartHandshake size={15} className="text-emerald-400 shrink-0" />
+              <div>
+                <p className="font-bold text-white">Fair Play & Respeito</p>
+                <p className="text-[11px] text-slate-400">Atitude positiva com os pares</p>
+              </div>
+            </div>
+            <div className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800 flex items-center gap-2">
+              <Flame size={15} className="text-amber-400 shrink-0" />
+              <div>
+                <p className="font-bold text-white">Comprometimento</p>
+                <p className="text-[11px] text-slate-400">Pontualidade e zelo nos treinos</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Pilares de Desenvolvimento Pessoal */}
+        <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <ShieldCheck size={16} className="text-emerald-400" />
+            Pilares de Desenvolvimento do Atleta
+          </h3>
+
+          <div className="space-y-3 pt-1">
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-slate-300 font-medium">Assiduidade & Presença</span>
+                <span className="text-emerald-400 font-bold">{student.attendance_rate}% ({student.presence_streak || 10} consecutivas)</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div 
+                  className="h-full bg-emerald-500 rounded-full transition-all" 
+                  style={{ width: `${student.attendance_rate}%` }} 
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-slate-300 font-medium">Comportamento & Convivência em Grupo</span>
+                <span className="text-blue-400 font-bold">{student.behavior_score || 95}/100</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div 
+                  className="h-full bg-blue-500 rounded-full transition-all" 
+                  style={{ width: `${student.behavior_score || 95}%` }} 
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-slate-300 font-medium">Aplicação Prática das Instruções</span>
+                <span className="text-purple-400 font-bold">Consistente (Nível 4/5)</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div 
+                  className="h-full bg-purple-500 rounded-full transition-all" 
+                  style={{ width: `80%` }} 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Carteirinha Digital Modal/Drawer */}
       {showQrCard && (
         <div className="p-6 bg-slate-950 border border-purple-500/30 rounded-2xl max-w-sm mx-auto shadow-2xl relative">
           <div className="text-center pb-4 border-b border-slate-800">
-            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">ESCOLINHA PRO</span>
+            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">{schoolName.toUpperCase()}</span>
             <h3 className="text-lg font-black text-white tracking-tight">CARTEIRINHA DO ATLETA</h3>
           </div>
 
