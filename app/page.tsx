@@ -4,22 +4,28 @@ import Link from 'next/link';
 import { 
   Users, 
   CircleDollarSign, 
-  AlertTriangle, 
   CalendarCheck, 
   UserPlus, 
   CheckCircle2, 
-  ChevronRight,
-  PhoneCall,
-  Sparkles,
-  Shirt,
-  BarChart3,
-  MessageSquare,
-  TrendingUp
+  ChevronRight, 
+  PhoneCall, 
+  Sparkles, 
+  Shirt, 
+  BarChart3, 
+  MessageSquare, 
+  TrendingUp,
+  UserMinus,
+  Percent,
+  Target,
+  ShieldCheck,
+  Layers,
+  ArrowUpRight
 } from 'lucide-react';
-import { mockSessions, mockCharges } from '@/lib/mock-data';
+import { mockSessions, mockCharges, mockManagementKPIs } from '@/lib/mock-data';
 
 export default function DashboardPage() {
   const pendingCharges = mockCharges.filter(c => c.status === 'overdue' || c.status === 'pending');
+  const kpis = mockManagementKPIs;
 
   return (
     <div className="space-y-6">
@@ -95,9 +101,9 @@ export default function DashboardPage() {
           </Link>
 
           {/* Passo 3 */}
-          <Link 
-            href="/indicadores"
-            className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-purple-500/50 hover:bg-slate-900/60 transition group"
+          <a 
+            href="#indicadores"
+            className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-purple-500/50 hover:bg-slate-900/60 transition group cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-lg bg-purple-500 text-slate-950 font-black text-xs flex items-center justify-center">3</span>
@@ -107,76 +113,139 @@ export default function DashboardPage() {
               Use o Sportdesk no dia a dia para acompanhar presença, pagamentos, ocupação, comunicação e indicadores.
             </p>
             <span className="text-[11px] text-purple-400 font-semibold mt-3 inline-block">
-              Ver indicadores executivos →
+              Ver indicadores abaixo ↓
             </span>
-          </Link>
+          </a>
         </div>
       </div>
 
-      {/* Grid de 4 Cards de Métricas Principais (Conforme MVP) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Alunos Ativos */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Alunos Ativos</span>
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
-              <Users size={20} />
-            </div>
+      {/* ======================================================== */}
+      {/* INDICADORES DE GESTÃO EXECUTIVA (SPORTDESK KPIS) */}
+      {/* ======================================================== */}
+      <div id="indicadores" className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TrendingUp size={18} className="text-emerald-400" />
+            <h2 className="text-base font-bold text-white tracking-tight">Indicadores de Gestão Executiva</h2>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white">86</span>
-            <span className="text-xs text-emerald-400 font-semibold flex items-center">
-              +4 este mês
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">Capacidade geral: 95 vagas</p>
+          <span className="text-xs text-slate-400">Outubro / 2026 • Visão Geral Consolidada</span>
         </div>
 
-        {/* Card 2: Recebido no Mês */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Recebido no Mês</span>
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-              <CircleDollarSign size={20} />
+        {/* Linha 1: Alunos, Retenção & Churn */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Alunos Ativos</span>
+              <Users size={16} className="text-emerald-400" />
+            </div>
+            <p className="text-2xl font-black text-white mt-1">{kpis.active_students}</p>
+            <div className="flex items-center gap-1 mt-0.5 text-[11px] text-emerald-400 font-semibold">
+              <ArrowUpRight size={12} /> +10 alunos vs mês anterior
             </div>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-emerald-400">R$ 5.840</span>
-            <span className="text-xs text-slate-400 font-medium">Outubro</span>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Novas Matrículas</span>
+              <UserPlus size={16} className="text-blue-400" />
+            </div>
+            <p className="text-2xl font-black text-white mt-1">{kpis.new_enrollments_month}</p>
+            <span className="text-[11px] text-blue-400 font-medium">Entradas no mês</span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">48 mensalidades quitadas</p>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Cancelamentos</span>
+              <UserMinus size={16} className="text-rose-400" />
+            </div>
+            <p className="text-2xl font-black text-rose-400 mt-1">{kpis.cancellations_month}</p>
+            <span className="text-[11px] text-slate-500 font-medium">Evasão controlada</span>
+          </div>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Taxa de Churn (Evasão)</span>
+              <Percent size={16} className="text-amber-400" />
+            </div>
+            <p className="text-2xl font-black text-emerald-400 mt-1">{kpis.churn_rate}%</p>
+            <span className="text-[11px] text-emerald-400 font-medium">Altíssima retenção</span>
+          </div>
         </div>
 
-        {/* Card 3: Em Atraso */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Em Atraso</span>
-            <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center border border-rose-500/20">
-              <AlertTriangle size={20} />
+        {/* Linha 2: Faturamento, Despesas, Margem & Ticket Médio */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Faturamento Total</span>
+              <CircleDollarSign size={16} className="text-emerald-400" />
             </div>
+            <p className="text-2xl font-black text-white mt-1">R$ {kpis.total_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <span className="text-[11px] text-emerald-400 font-medium">Mensalidades + Uniformes</span>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-rose-400">R$ 920</span>
-            <span className="text-xs text-rose-400/80 font-medium">6 alunos</span>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Despesas Operacionais</span>
+              <Layers size={16} className="text-rose-400" />
+            </div>
+            <p className="text-2xl font-black text-rose-400 mt-1">R$ {kpis.total_expenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <span className="text-[11px] text-slate-500 font-medium">Professores e quadras</span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Cobrança via WhatsApp disponível</p>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Margem Líquida</span>
+              <TrendingUp size={16} className="text-purple-400" />
+            </div>
+            <p className="text-2xl font-black text-emerald-400 mt-1">{kpis.net_margin}%</p>
+            <span className="text-[11px] text-purple-400 font-medium">Lucro operacional</span>
+          </div>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 hover:border-slate-700 transition">
+            <div className="flex items-center justify-between text-slate-400 text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[10px]">Ticket Médio / Aluno</span>
+              <Target size={16} className="text-teal-400" />
+            </div>
+            <p className="text-2xl font-black text-white mt-1">R$ {kpis.average_ticket.toFixed(2)}</p>
+            <span className="text-[11px] text-slate-400 font-medium">Média ponderada</span>
+          </div>
         </div>
 
-        {/* Card 4: Presença Média */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Presença Média</span>
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
-              <CalendarCheck size={20} />
+        {/* Linha 3: Ocupação de Vagas e Inadimplência */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-2.5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <ShieldCheck size={15} className="text-emerald-400" /> Ocupação de Vagas ({kpis.overall_occupancy}%)
+              </span>
+              <span className="text-slate-400">{kpis.active_students}/{kpis.total_capacity} alunos</span>
             </div>
+            <div className="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all"
+                style={{ width: `${kpis.overall_occupancy}%` }}
+              />
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Apenas <strong className="text-white">{kpis.total_capacity - kpis.active_students} vagas livres</strong>. As turmas Sub-11 e Sub-7 já estão 100% lotadas.
+            </p>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white">82%</span>
-            <span className="text-xs text-emerald-400 font-semibold flex items-center">
-              +3% vs set
-            </span>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-2.5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <CircleDollarSign size={15} className="text-emerald-400" /> Inadimplência Controlada ({kpis.default_rate}%)
+              </span>
+              <span className="text-emerald-400 font-bold">95.2% em dia</span>
+            </div>
+            <div className="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden flex">
+              <div className="h-full bg-emerald-500" style={{ width: '95.2%' }} />
+              <div className="h-full bg-rose-500" style={{ width: '4.8%' }} />
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Cobranças via WhatsApp e Pix reduziram a inadimplência para menos de 5%.
+            </p>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Baseado nos treinos dos últimos 30 dias</p>
         </div>
       </div>
 
@@ -250,7 +319,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link
-            href="/rentabilidade"
+            href="/financeiro"
             className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-800/80 transition group"
           >
             <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-105 transition">
@@ -258,20 +327,20 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-sm font-semibold text-white">Rentabilidade</p>
-              <p className="text-[11px] text-slate-400">DRE por horário</p>
+              <p className="text-[11px] text-slate-400">Ver DRE no Financeiro</p>
             </div>
           </Link>
 
           <Link
-            href="/indicadores"
+            href="/desenvolvimento"
             className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/80 transition group"
           >
             <div className="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:scale-105 transition">
               <TrendingUp size={18} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Indicadores</p>
-              <p className="text-[11px] text-slate-400">KPIs & crescimento</p>
+              <p className="text-sm font-semibold text-white">Desenvolvimento</p>
+              <p className="text-[11px] text-slate-400">7 dimensões do atleta</p>
             </div>
           </Link>
 
