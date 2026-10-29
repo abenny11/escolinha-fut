@@ -13,10 +13,9 @@ import {
   X,
   Sparkles,
   ChevronDown,
-  TrendingUp,
-  Activity
+  TrendingUp
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppRole } from '@/contexts/RoleContext';
 import { AppRole } from '@/lib/types';
 
@@ -25,16 +24,30 @@ export function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const { currentRole, setRole, roleLabels } = useAppRole();
+  const [customLogo, setCustomLogo] = useState('');
+  const [customSchoolName, setCustomSchoolName] = useState('Escolinha Pro');
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('escolinha_pro_settings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.logoUrl) setCustomLogo(parsed.logoUrl);
+        if (parsed.tradeName) setCustomSchoolName(parsed.tradeName);
+      }
+    } catch {
+      // Ignora erro
+    }
+  }, []);
 
   // Filtragem estrita de links por perfil (Permissionamento)
   const allNavItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin'] },
     { href: '/alunos', label: 'Alunos & Atletas', icon: Users, roles: ['admin', 'secretary'] },
     { href: '/turmas', label: 'Turmas & Treinos', icon: Trophy, roles: ['admin', 'secretary', 'coach'] },
-    { href: '/chamada', label: 'Chamada Rápida', icon: CalendarCheck, badge: 'Treino', roles: ['admin', 'secretary', 'coach'] },
-    { href: '/scout', label: 'Scout do Jogador', icon: Activity, badge: 'Ao Vivo', roles: ['admin', 'coach', 'guardian_portal'] },
-    { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: TrendingUp, badge: '7 Dimensões', roles: ['admin', 'coach', 'guardian_portal'] },
-    { href: '/gamificacao', label: 'Evolução & Estrelas', icon: Sparkles, badge: 'Craques', roles: ['admin', 'coach', 'guardian_portal'] },
+    { href: '/chamada', label: 'Chamada Rápida', icon: CalendarCheck, roles: ['admin', 'secretary', 'coach'] },
+    { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: TrendingUp, roles: ['admin', 'coach', 'guardian_portal'] },
+    { href: '/gamificacao', label: 'Evolução & Estrelas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/financeiro', label: 'Financeiro', icon: CircleDollarSign, roles: ['admin', 'secretary'] },
     { href: '/portal-pais', label: 'Área do Responsável', icon: Users, roles: ['guardian_portal'] },
     { href: '/configuracoes', label: 'Configurações', icon: Settings, roles: ['admin', 'secretary'] },
@@ -47,11 +60,16 @@ export function Sidebar() {
       {/* Top Mobile Bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-950 border-b border-slate-800 px-4 py-3 flex items-center justify-between text-white">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-slate-950">
-            ⚽
+          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-slate-950 overflow-hidden">
+            {customLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={customLogo} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              '⚽'
+            )}
           </div>
           <div>
-            <span className="font-bold text-sm tracking-tight block leading-none">Escolinha Pro</span>
+            <span className="font-bold text-sm tracking-tight block leading-none">{customSchoolName}</span>
             <span className="text-[10px] text-emerald-400 font-semibold">{roleLabels[currentRole].name}</span>
           </div>
         </div>
@@ -79,11 +97,16 @@ export function Sidebar() {
         {/* Header / Logo */}
         <div className="p-4 border-b border-slate-800/60">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20">
-              ⚽
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20 overflow-hidden">
+              {customLogo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={customLogo} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                '⚽'
+              )}
             </div>
-            <div>
-              <h1 className="font-black text-slate-100 text-base leading-tight tracking-tight">Escolinha Pro</h1>
+            <div className="truncate">
+              <h1 className="font-black text-slate-100 text-base leading-tight tracking-tight truncate">{customSchoolName}</h1>
               <p className="text-[11px] text-emerald-400 font-semibold">Gestão & Performance</p>
             </div>
           </div>
@@ -154,11 +177,6 @@ export function Sidebar() {
                   <Icon size={18} className={isActive ? 'text-slate-950' : 'text-slate-400'} />
                   <span>{item.label}</span>
                 </div>
-                {item.badge && (
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-slate-950/20 text-slate-950' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
-                    {item.badge}
-                  </span>
-                )}
               </Link>
             );
           })}
