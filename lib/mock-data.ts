@@ -13,7 +13,15 @@ import {
   AthleteAssessment,
   AthleteGoal,
   MatchScoutStats,
-  TrainingPhysicalScout
+  TrainingPhysicalScout,
+  UniformItem,
+  UniformSale,
+  TrialBooking,
+  ClassProfitability,
+  ManagementKPIs,
+  StaffAnnouncement,
+  StaffTask,
+  SportdeskPlanInfo
 } from './types';
 
 export const mockModalities: Modality[] = [
@@ -1409,5 +1417,442 @@ export const mockPhysicalScouts: Record<string, TrainingPhysicalScout> = {
     ],
   },
 };
+
+// -------------------------------------------------------------
+// DADOS SPORTDESK: UNIFORMES E ESTOQUE
+// -------------------------------------------------------------
+export const mockUniformItems: UniformItem[] = [
+  {
+    id: 'uni-1',
+    name: 'Kit Oficial Completo (Camisa + Calção + Meião)',
+    category: 'kit_completo',
+    size: 'Sub-9 (8 anos)',
+    cost_price: 65.0,
+    sale_price: 140.0,
+    stock_quantity: 14,
+    min_stock_alert: 5,
+    status: 'em_estoque',
+  },
+  {
+    id: 'uni-2',
+    name: 'Kit Oficial Completo (Camisa + Calção + Meião)',
+    category: 'kit_completo',
+    size: 'Sub-11 (10/12 anos)',
+    cost_price: 68.0,
+    sale_price: 140.0,
+    stock_quantity: 3,
+    min_stock_alert: 5,
+    status: 'estoque_baixo',
+  },
+  {
+    id: 'uni-3',
+    name: 'Camisa de Treino DryFit Oficial',
+    category: 'camisa',
+    size: 'Tamanho 14',
+    cost_price: 32.0,
+    sale_price: 75.0,
+    stock_quantity: 22,
+    min_stock_alert: 8,
+    status: 'em_estoque',
+  },
+  {
+    id: 'uni-4',
+    name: 'Calção Preto Oficial',
+    category: 'calcao',
+    size: 'Tamanho 10',
+    cost_price: 20.0,
+    sale_price: 45.0,
+    stock_quantity: 0,
+    min_stock_alert: 5,
+    status: 'esgotado',
+  },
+  {
+    id: 'uni-5',
+    name: 'Meião de Jogo Reforçado',
+    category: 'meiao',
+    size: '34 ao 38',
+    cost_price: 14.0,
+    sale_price: 30.0,
+    stock_quantity: 35,
+    min_stock_alert: 10,
+    status: 'em_estoque',
+  },
+  {
+    id: 'uni-6',
+    name: 'Agasalho de Inverno Corta-Vento',
+    category: 'agasalho',
+    size: 'Tamanho 12',
+    cost_price: 85.0,
+    sale_price: 180.0,
+    stock_quantity: 6,
+    min_stock_alert: 4,
+    status: 'em_estoque',
+  },
+  {
+    id: 'uni-7',
+    name: 'Colete de Treino Dupla Face (Verde/Laranja)',
+    category: 'colete_treino',
+    size: 'Juvenil',
+    cost_price: 18.0,
+    sale_price: 35.0,
+    stock_quantity: 40,
+    min_stock_alert: 15,
+    status: 'em_estoque',
+  },
+];
+
+export const mockUniformSales: UniformSale[] = [
+  {
+    id: 'sale-1',
+    student_name: 'Lucas Silveira',
+    item_name: 'Kit Oficial Completo (Camisa + Calção + Meião)',
+    size: 'Sub-9 (8 anos)',
+    quantity: 1,
+    total_amount: 140.0,
+    payment_method: 'pix',
+    sale_date: '2026-10-25',
+    delivery_status: 'entregue',
+  },
+  {
+    id: 'sale-2',
+    student_name: 'Matheus Mendes',
+    item_name: 'Camisa de Treino DryFit Oficial',
+    size: 'Tamanho 14',
+    quantity: 2,
+    total_amount: 150.0,
+    payment_method: 'credit_card',
+    sale_date: '2026-10-27',
+    delivery_status: 'entregue',
+  },
+  {
+    id: 'sale-3',
+    student_name: 'Gabriel Duarte Santos',
+    item_name: 'Meião de Jogo Reforçado',
+    size: '34 ao 38',
+    quantity: 1,
+    total_amount: 30.0,
+    payment_method: 'pix',
+    sale_date: '2026-10-28',
+    delivery_status: 'pendente_retirada',
+  },
+];
+
+// -------------------------------------------------------------
+// DADOS SPORTDESK: AULAS EXPERIMENTAIS (PIPELINE DE LEADS)
+// -------------------------------------------------------------
+export const mockTrialBookings: TrialBooking[] = [
+  {
+    id: 'trial-1',
+    student_name: 'Davi Lucca Ribeiro',
+    age: 8,
+    guardian_name: 'Juliana Ribeiro',
+    guardian_phone: '(11) 98765-1122',
+    modality_name: 'Futebol Society',
+    preferred_class_id: 'class-1',
+    preferred_class_name: 'Sub-9 Manhã (Iniciação)',
+    scheduled_date: '2026-11-03',
+    scheduled_time: '08:30',
+    coach_feedback: 'Muito comunicativo e já domina condução básica. Mãe quer fechar plano semestral.',
+    status: 'compareceu',
+    created_at: '2026-10-26',
+  },
+  {
+    id: 'trial-2',
+    student_name: 'Cauã Oliveira Ramos',
+    age: 10,
+    guardian_name: 'Roberto Ramos',
+    guardian_phone: '(11) 97123-4455',
+    modality_name: 'Futebol Society',
+    preferred_class_id: 'class-2',
+    preferred_class_name: 'Sub-11 Tarde (Formação)',
+    scheduled_date: '2026-11-04',
+    scheduled_time: '15:30',
+    coach_feedback: 'Aguardando comparecimento na quarta-feira.',
+    status: 'agendada',
+    created_at: '2026-10-28',
+  },
+  {
+    id: 'trial-3',
+    student_name: 'Felipe Santana Lima',
+    age: 6,
+    guardian_name: 'Patrícia Santana',
+    guardian_phone: '(11) 99887-3321',
+    modality_name: 'Futsal',
+    preferred_class_id: 'class-5',
+    preferred_class_name: 'Sub-7 Baby Foot',
+    scheduled_date: '2026-10-24',
+    scheduled_time: '09:00',
+    coach_feedback: 'Adorou o treino! Matrícula realizada com pagamento de taxa e uniforme.',
+    status: 'matriculado',
+    created_at: '2026-10-20',
+  },
+  {
+    id: 'trial-4',
+    student_name: 'Henrique Alves Prado',
+    age: 12,
+    guardian_name: 'Cláudio Prado',
+    guardian_phone: '(11) 98222-9900',
+    modality_name: 'Futsal',
+    preferred_class_id: 'class-3',
+    preferred_class_name: 'Sub-13 Tarde (Intermediário)',
+    scheduled_date: '2026-10-22',
+    scheduled_time: '17:00',
+    coach_feedback: 'Pai informou que teve imprevisto médico. Reagendando para a próxima terça.',
+    status: 'ausente',
+    created_at: '2026-10-18',
+  },
+];
+
+// -------------------------------------------------------------
+// DADOS SPORTDESK: RENTABILIDADE POR TURMA
+// -------------------------------------------------------------
+export const mockClassProfitability: ClassProfitability[] = [
+  {
+    class_id: 'class-1',
+    class_name: 'Sub-9 Manhã (Iniciação)',
+    modality_name: 'Futebol Society',
+    coach_name: 'Prof. Carlos Eduardo',
+    enrolled_count: 18,
+    capacity: 20,
+    occupancy_rate: 90,
+    monthly_revenue: 2520.0, // 18 alunos * ~140
+    coach_cost: 720.0, // 8 aulas no mês * R$ 90/aula
+    court_cost: 600.0, // Custo proporcional de manutenção/aluguel da quadra
+    total_expenses: 1320.0,
+    net_profit: 1200.0,
+    margin_percentage: 47.6,
+    status: 'altamente_lucrativa',
+  },
+  {
+    class_id: 'class-2',
+    class_name: 'Sub-11 Tarde (Formação)',
+    modality_name: 'Futebol Society',
+    coach_name: 'Prof. Marcos Vinícius',
+    enrolled_count: 22,
+    capacity: 22,
+    occupancy_rate: 100,
+    monthly_revenue: 3080.0,
+    coach_cost: 800.0,
+    court_cost: 650.0,
+    total_expenses: 1450.0,
+    net_profit: 1630.0,
+    margin_percentage: 52.9,
+    status: 'altamente_lucrativa',
+  },
+  {
+    class_id: 'class-3',
+    class_name: 'Sub-13 Tarde (Intermediário)',
+    modality_name: 'Futsal',
+    coach_name: 'Prof. Carlos Eduardo',
+    enrolled_count: 16,
+    capacity: 18,
+    occupancy_rate: 88.8,
+    monthly_revenue: 2240.0,
+    coach_cost: 720.0,
+    court_cost: 500.0,
+    total_expenses: 1220.0,
+    net_profit: 1020.0,
+    margin_percentage: 45.5,
+    status: 'altamente_lucrativa',
+  },
+  {
+    class_id: 'class-4',
+    class_name: 'Sub-15 Noturno (Competição)',
+    modality_name: 'Futebol Society',
+    coach_name: 'Prof. Marcos Vinícius',
+    enrolled_count: 15,
+    capacity: 20,
+    occupancy_rate: 75,
+    monthly_revenue: 2100.0,
+    coach_cost: 850.0, // Adicional noturno
+    court_cost: 750.0, // Energia elétrica dos refletores
+    total_expenses: 1600.0,
+    net_profit: 500.0,
+    margin_percentage: 23.8,
+    status: 'equilibrada',
+  },
+  {
+    class_id: 'class-5',
+    class_name: 'Sub-7 Baby Foot',
+    modality_name: 'Futsal',
+    coach_name: 'Prof. Carlos Eduardo',
+    enrolled_count: 15,
+    capacity: 15,
+    occupancy_rate: 100,
+    monthly_revenue: 2100.0,
+    coach_cost: 600.0,
+    court_cost: 450.0,
+    total_expenses: 1050.0,
+    net_profit: 1050.0,
+    margin_percentage: 50.0,
+    status: 'altamente_lucrativa',
+  },
+];
+
+// -------------------------------------------------------------
+// DADOS SPORTDESK: INDICADORES DE GESTÃO (KPIS)
+// -------------------------------------------------------------
+export const mockManagementKPIs: ManagementKPIs = {
+  active_students: 86,
+  new_enrollments_month: 12,
+  cancellations_month: 2,
+  churn_rate: 2.3, // Excelente índice de retenção
+  total_revenue: 14850.0,
+  total_expenses: 6840.0,
+  net_margin: 53.9,
+  average_ticket: 142.5,
+  total_capacity: 95,
+  overall_occupancy: 90.5,
+  default_rate: 4.8, // Inadimplência baixa
+};
+
+// -------------------------------------------------------------
+// DADOS SPORTDESK: COMUNICAÇÃO E ORGANIZAÇÃO (MURAL & TAREFAS)
+// -------------------------------------------------------------
+export const mockStaffAnnouncements: StaffAnnouncement[] = [
+  {
+    id: 'ann-1',
+    title: 'Festival Interno de Fim de Mês: Torneio Integração 🏆',
+    content: 'No próximo sábado teremos o torneio integração entre todas as categorias Sub-9 e Sub-11. Chegada dos professores às 07:30 para montagem dos campos e súmulas.',
+    author: 'Coordenação Esportiva',
+    target_audience: 'todos',
+    priority: 'alta',
+    created_at: '2026-10-27',
+    whatsapp_ready_text: '⚽ *COMUNICADO SPORTDESK*: Pais e atletas, neste sábado teremos nosso Torneio Integração! Venham com o uniforme oficial completo. Início pontual às 08:30 no Campo 1.',
+  },
+  {
+    id: 'ann-2',
+    title: 'Reposição de Bolas e Coletes na Quadra 2',
+    content: 'O lote com 15 novas bolas Penalty Sub-11 e 30 coletes duplos foi entregue na sala de materiais. Favor manter as chaves no chaveiro da secretaria.',
+    author: 'Secretaria',
+    target_audience: 'equipe',
+    priority: 'normal',
+    created_at: '2026-10-28',
+  },
+  {
+    id: 'ann-3',
+    title: 'Campanha de Hidratação nos Dias Quentes 💧',
+    content: 'Lembrar todos os alunos de trazerem suas garrafas de água individuais identificadas. Teremos pausas de 2 minutos a cada 20 minutos de treino.',
+    author: 'Prof. Carlos Eduardo',
+    target_audience: 'todos',
+    priority: 'normal',
+    created_at: '2026-10-29',
+    whatsapp_ready_text: '💧 *DICA DE SAÚDE SPORTDESK*: Com o calor, lembrem de enviar seus pequenos com garrafinha de água individual para o treino de hoje!',
+  },
+];
+
+export const mockStaffTasks: StaffTask[] = [
+  {
+    id: 'task-1',
+    title: 'Revisar calibragem de bolas da categoria Sub-9 e Sub-11',
+    category: 'material',
+    assigned_to: 'Prof. Marcos Vinícius',
+    due_date: 'Hoje',
+    completed: true,
+    priority: 'media',
+  },
+  {
+    id: 'task-2',
+    title: 'Ligar para pais das aulas experimentais de terça e quarta',
+    category: 'secretaria',
+    assigned_to: 'Secretaria Ana',
+    due_date: 'Hoje',
+    completed: false,
+    priority: 'alta',
+  },
+  {
+    id: 'task-3',
+    title: 'Separar kits de uniforme para entrega na sexta-feira',
+    category: 'material',
+    assigned_to: 'Secretaria Ana',
+    due_date: 'Amanhã',
+    completed: false,
+    priority: 'media',
+  },
+  {
+    id: 'task-4',
+    title: 'Preencher fichas de scout do amistoso do Sub-13',
+    category: 'treino',
+    assigned_to: 'Prof. Carlos Eduardo',
+    due_date: 'Sexta-feira',
+    completed: false,
+    priority: 'alta',
+  },
+];
+
+// -------------------------------------------------------------
+// DADOS SPORTDESK: PLANOS DE ASSINATURA DA ESCOLA
+// -------------------------------------------------------------
+export const mockSportdeskPlans: SportdeskPlanInfo[] = [
+  {
+    tier: 'starter',
+    name: 'Starter',
+    price_label: 'R$ 49/mês',
+    monthly_price: 49,
+    unit_limit: 'Até 1 unidade',
+    max_students: 'Até 50 alunos ativos',
+    features: [
+      'Até 1 unidade',
+      'Até 50 alunos ativos',
+      'Todos os módulos inclusos',
+      'Chamada rápida no campo',
+      'Financeiro e Pix automático',
+      'Portal da família',
+    ],
+  },
+  {
+    tier: 'pro',
+    name: 'Pro',
+    price_label: 'R$ 99/mês',
+    monthly_price: 99,
+    unit_limit: 'Até 3 unidades',
+    max_students: 'Até 300 alunos ativos',
+    popular: true,
+    features: [
+      'Até 3 unidades',
+      'Até 300 alunos ativos',
+      'Todos os módulos inclusos',
+      'Scout do jogador & radar de treino',
+      'Aulas experimentais & CRM de leads',
+      'Controle de uniformes e estoque',
+      'Rentabilidade por turma',
+      'Suporte prioritário via WhatsApp',
+    ],
+  },
+  {
+    tier: 'business',
+    name: 'Business',
+    price_label: 'R$ 199/mês',
+    monthly_price: 199,
+    unit_limit: 'Unidades ilimitadas',
+    max_students: 'Alunos ilimitados',
+    features: [
+      'Unidades ilimitadas',
+      'Alunos ilimitados',
+      'Todos os módulos inclusos',
+      'Múltiplas quadras e polos esportivos',
+      'Relatórios executivos & DRE de turmas',
+      'Exportação contábil',
+      'Treinamento de equipe',
+    ],
+  },
+  {
+    tier: 'enterprise',
+    name: 'Enterprise',
+    price_label: 'Sob consulta',
+    monthly_price: 0,
+    unit_limit: 'Unidades ilimitadas',
+    max_students: 'Alunos ilimitados',
+    features: [
+      'Unidades ilimitadas',
+      'Alunos ilimitados',
+      'Todos os módulos inclusos',
+      'App personalizado com sua marca',
+      'Gerente de conta dedicado',
+      'SLA garantido e customizações',
+    ],
+  },
+];
+
 
 

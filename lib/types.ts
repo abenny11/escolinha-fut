@@ -345,4 +345,122 @@ export interface TrainingPhysicalScout {
   overall_physical_score: number; // Média física global
 }
 
+// -------------------------------------------------------------
+// MÓDULOS SPORTDESK (OPERAÇÃO COMPLETA)
+// -------------------------------------------------------------
+
+// 1. Uniformes e Estoque
+export interface UniformItem {
+  id: string;
+  name: string;
+  category: 'camisa' | 'calcao' | 'meiao' | 'kit_completo' | 'agasalho' | 'colete_treino';
+  size: string; // Ex: 'Sub-7 (6)', 'Sub-11 (10)', 'P', 'M', 'G'
+  cost_price: number;
+  sale_price: number;
+  stock_quantity: number;
+  min_stock_alert: number;
+  status: 'em_estoque' | 'estoque_baixo' | 'esgotado';
+}
+
+export interface UniformSale {
+  id: string;
+  student_name: string;
+  item_name: string;
+  size: string;
+  quantity: number;
+  total_amount: number;
+  payment_method: PaymentMethod;
+  sale_date: string;
+  delivery_status: 'entregue' | 'pendente_retirada';
+}
+
+// 2. Aulas Experimentais (Pipeline de Leads & Conversão)
+export type TrialStatus = 'agendada' | 'compareceu' | 'ausente' | 'matriculado' | 'cancelada';
+
+export interface TrialBooking {
+  id: string;
+  student_name: string;
+  age: number;
+  guardian_name: string;
+  guardian_phone: string;
+  modality_name: string;
+  preferred_class_id: string;
+  preferred_class_name: string;
+  scheduled_date: string;
+  scheduled_time: string;
+  coach_feedback?: string;
+  status: TrialStatus;
+  created_at: string;
+}
+
+// 3. Rentabilidade por Turma
+export interface ClassProfitability {
+  class_id: string;
+  class_name: string;
+  modality_name: string;
+  coach_name: string;
+  enrolled_count: number;
+  capacity: number;
+  occupancy_rate: number;
+  monthly_revenue: number; // Mensalidades recebidas dos alunos
+  coach_cost: number; // Salário ou hora-aula do professor
+  court_cost: number; // Aluguel / manutenção da quadra por horário
+  total_expenses: number;
+  net_profit: number; // Lucro líquido
+  margin_percentage: number; // Margem (%)
+  status: 'altamente_lucrativa' | 'equilibrada' | 'atencao';
+}
+
+// 4. Indicadores de Gestão (KPIs)
+export interface ManagementKPIs {
+  active_students: number;
+  new_enrollments_month: number;
+  cancellations_month: number;
+  churn_rate: number; // Taxa de evasão %
+  total_revenue: number;
+  total_expenses: number;
+  net_margin: number;
+  average_ticket: number;
+  total_capacity: number;
+  overall_occupancy: number; // Ocupação %
+  default_rate: number; // Inadimplência %
+}
+
+// 5. Comunicação e Organização (Mural & Tarefas da Equipe)
+export interface StaffAnnouncement {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  target_audience: 'equipe' | 'responsaveis' | 'todos';
+  priority: 'baixa' | 'normal' | 'alta' | 'urgente';
+  created_at: string;
+  whatsapp_ready_text?: string;
+}
+
+export interface StaffTask {
+  id: string;
+  title: string;
+  category: 'treino' | 'material' | 'secretaria' | 'financeiro';
+  assigned_to: string;
+  due_date: string;
+  completed: boolean;
+  priority: 'baixa' | 'media' | 'alta';
+}
+
+// 6. Planos do Sportdesk
+export type SportdeskPlanTier = 'starter' | 'pro' | 'business' | 'enterprise';
+
+export interface SportdeskPlanInfo {
+  tier: SportdeskPlanTier;
+  name: string;
+  price_label: string;
+  monthly_price: number;
+  unit_limit: string;
+  max_students: string;
+  popular?: boolean;
+  features: string[];
+}
+
+
 

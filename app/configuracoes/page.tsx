@@ -647,6 +647,126 @@ export default function ConfiguracoesPage() {
               </div>
             </div>
           </div>
+
+          {/* ======================================================== */}
+          {/* BLOCO 6: PLANOS DE ASSINATURA SPORTDESK */}
+          {/* ======================================================== */}
+          <div className="bg-slate-950/90 border border-purple-500/30 rounded-2xl p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+              <div>
+                <span className="px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] font-bold uppercase tracking-wider">
+                  Assinatura da Escola
+                </span>
+                <h3 className="text-lg font-black text-white mt-1">Planos para cada etapa da sua escola</h3>
+                <p className="text-xs text-slate-400">
+                  Comece com a estrutura que faz sentido hoje e evolua conforme sua operação crescer.
+                </p>
+              </div>
+
+              <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold self-start sm:self-auto flex items-center gap-1.5">
+                <CheckCircle size={14} /> Seu Plano Atual: Pro (R$ 99/mês)
+              </div>
+            </div>
+
+            {/* Grid dos 4 Planos Sportdesk */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Starter */}
+              <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                <div>
+                  <h4 className="font-black text-white text-base">Starter</h4>
+                  <div className="text-xl font-black text-white mt-1">R$ 49<span className="text-xs text-slate-400 font-normal">/mês</span></div>
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-300">
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Até 1 unidade</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Até 50 alunos ativos</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Todos os módulos inclusos</li>
+                  </ul>
+                </div>
+                <a
+                  href="https://mysportdesk.app/signup?plan=starter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold text-center transition block"
+                >
+                  Começar grátis
+                </a>
+              </div>
+
+              {/* Pro (Mais Popular) */}
+              <div className="bg-gradient-to-b from-purple-950/40 to-slate-900/80 border-2 border-purple-500/50 rounded-xl p-4 flex flex-col justify-between space-y-3 relative shadow-lg shadow-purple-950/50">
+                <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-purple-500 text-white text-[9px] font-black uppercase tracking-wider">
+                  Mais popular
+                </span>
+                <div>
+                  <h4 className="font-black text-white text-base">Pro</h4>
+                  <div className="text-xl font-black text-white mt-1">R$ 99<span className="text-xs text-slate-400 font-normal">/mês</span></div>
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-300">
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-purple-400" /> Até 3 unidades</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-purple-400" /> Até 300 alunos ativos</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-purple-400" /> Todos os módulos inclusos</li>
+                  </ul>
+                </div>
+                <a
+                  href="https://mysportdesk.app/signup?plan=pro"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold text-center transition block shadow-md shadow-purple-600/30"
+                >
+                  Plano Ativo (Renovar)
+                </a>
+              </div>
+
+              {/* Business */}
+              <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                <div>
+                  <h4 className="font-black text-white text-base">Business</h4>
+                  <div className="text-xl font-black text-white mt-1">R$ 199<span className="text-xs text-slate-400 font-normal">/mês</span></div>
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-300">
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Unidades ilimitadas</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Alunos ilimitados</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Todos os módulos inclusos</li>
+                  </ul>
+                </div>
+                <a
+                  href="https://mysportdesk.app/signup?plan=business"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold text-center transition block"
+                >
+                  Fazer Upgrade
+                </a>
+              </div>
+
+              {/* Enterprise */}
+              <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                <div>
+                  <h4 className="font-black text-white text-base">Enterprise</h4>
+                  <div className="text-xl font-black text-white mt-1">Sob consulta</div>
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-300">
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Unidades ilimitadas</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Alunos ilimitados</li>
+                    <li className="flex items-center gap-1.5"><CheckCircle size={12} className="text-emerald-400" /> Suporte & SLA dedicado</li>
+                  </ul>
+                </div>
+                <a
+                  href="mailto:eginarete@gmail.com?subject=Interesse%20no%20plano%20Enterprise%20%E2%80%94%20Sportdesk"
+                  className="w-full py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold text-center transition block"
+                >
+                  Falar com vendas
+                </a>
+              </div>
+            </div>
+
+            <div className="text-right pt-2 border-t border-slate-800/80">
+              <a
+                href="https://mysportdesk.app/pricing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold"
+              >
+                Ver comparativo completo →
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 

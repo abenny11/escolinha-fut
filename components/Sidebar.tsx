@@ -9,11 +9,16 @@ import {
   CalendarCheck, 
   CircleDollarSign, 
   Settings, 
-  Menu,
-  X,
-  Sparkles,
-  ChevronDown,
-  TrendingUp
+  Menu, 
+  X, 
+  Sparkles, 
+  ChevronDown, 
+  TrendingUp,
+  UserPlus,
+  Shirt,
+  BarChart3,
+  MessageSquare,
+  Award
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAppRole } from '@/contexts/RoleContext';
@@ -25,7 +30,7 @@ export function Sidebar() {
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const { currentRole, setRole, roleLabels } = useAppRole();
   const [customLogo, setCustomLogo] = useState('');
-  const [customSchoolName, setCustomSchoolName] = useState('Escolinha Pro');
+  const [customSchoolName, setCustomSchoolName] = useState('Sportdesk');
 
   useEffect(() => {
     try {
@@ -43,12 +48,17 @@ export function Sidebar() {
   // Filtragem estrita de links por perfil (Permissionamento)
   const allNavItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin'] },
-    { href: '/alunos', label: 'Alunos & Atletas', icon: Users, roles: ['admin', 'secretary'] },
-    { href: '/turmas', label: 'Turmas & Treinos', icon: Trophy, roles: ['admin', 'secretary', 'coach'] },
-    { href: '/chamada', label: 'Chamada Rápida', icon: CalendarCheck, roles: ['admin', 'secretary', 'coach'] },
-    { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: TrendingUp, roles: ['admin', 'coach', 'guardian_portal'] },
-    { href: '/gamificacao', label: 'Evolução & Estrelas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
-    { href: '/financeiro', label: 'Financeiro', icon: CircleDollarSign, roles: ['admin', 'secretary'] },
+    { href: '/alunos', label: 'Alunos & Matrículas', icon: Users, roles: ['admin', 'secretary'] },
+    { href: '/turmas', label: 'Agenda & Grade', icon: Trophy, roles: ['admin', 'secretary', 'coach'] },
+    { href: '/chamada', label: 'Chamada & Frequência', icon: CalendarCheck, roles: ['admin', 'secretary', 'coach'] },
+    { href: '/experimentais', label: 'Aulas Experimentais', icon: UserPlus, roles: ['admin', 'secretary', 'coach'] },
+    { href: '/uniformes', label: 'Uniformes & Estoque', icon: Shirt, roles: ['admin', 'secretary'] },
+    { href: '/financeiro', label: 'Financeiro & Cobrança', icon: CircleDollarSign, roles: ['admin', 'secretary'] },
+    { href: '/rentabilidade', label: 'Rentabilidade por Turma', icon: BarChart3, roles: ['admin'] },
+    { href: '/indicadores', label: 'Indicadores de Gestão', icon: TrendingUp, roles: ['admin'] },
+    { href: '/comunicacao', label: 'Comunicação & Tarefas', icon: MessageSquare, roles: ['admin', 'secretary', 'coach'] },
+    { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: Award, roles: ['admin', 'coach', 'guardian_portal'] },
+    { href: '/gamificacao', label: 'Evolução & Conquistas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/portal-pais', label: 'Área do Responsável', icon: Users, roles: ['guardian_portal'] },
     { href: '/configuracoes', label: 'Configurações', icon: Settings, roles: ['admin', 'secretary'] },
   ];
