@@ -43,7 +43,7 @@ export default function DashboardPage() {
         {/* Status Operacional */}
         <div className="flex items-center gap-2 bg-slate-800/80 border border-slate-700/60 rounded-xl px-3.5 py-1.5 self-start sm:self-auto">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-medium text-slate-300">Plano Pro • 86/300 Alunos Ativos</span>
+          <span className="text-xs font-medium text-slate-300">86 Alunos Ativos • 90.5% de Ocupação</span>
         </div>
       </div>
 
