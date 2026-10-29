@@ -13,7 +13,8 @@ import {
   X,
   Sparkles,
   ChevronDown,
-  TrendingUp
+  TrendingUp,
+  Activity
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAppRole } from '@/contexts/RoleContext';
@@ -31,6 +32,7 @@ export function Sidebar() {
     { href: '/alunos', label: 'Alunos & Atletas', icon: Users, roles: ['admin', 'secretary'] },
     { href: '/turmas', label: 'Turmas & Treinos', icon: Trophy, roles: ['admin', 'secretary', 'coach'] },
     { href: '/chamada', label: 'Chamada Rápida', icon: CalendarCheck, badge: 'Treino', roles: ['admin', 'secretary', 'coach'] },
+    { href: '/scout', label: 'Scout do Jogador', icon: Activity, badge: 'Ao Vivo', roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: TrendingUp, badge: '7 Dimensões', roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/gamificacao', label: 'Evolução & Estrelas', icon: Sparkles, badge: 'Craques', roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/financeiro', label: 'Financeiro', icon: CircleDollarSign, roles: ['admin', 'secretary'] },

@@ -274,3 +274,66 @@ export interface AthleteAssessment {
   goals: AthleteGoal[];
 }
 
+// ==========================================
+// MÓDULO: SCOUT DO JOGADOR (JOGO E TREINO)
+// ==========================================
+
+export type ScoutEventType = 'coletivo_treino' | 'amistoso' | 'campeonato';
+
+export interface MatchScoutStats {
+  id: string;
+  student_id: string;
+  student_name: string;
+  position: SoccerPosition;
+  match_type: ScoutEventType;
+  match_date: string;
+  opponent_context: string;
+  minutes_played: number;
+  
+  // Ações Positivas (O que fez de bom)
+  goals: number;
+  assists: number;
+  passes_completed: number;
+  tackles_successful: number; // Desarmes
+  saves_or_blocks: number; // Defesas / Bloqueios
+  dribbles_successful: number;
+  fouls_received: number;
+  
+  // Ações a Corrigir (O que precisa melhorar / falhas)
+  passes_missed: number;
+  balls_lost: number; // Perdas de posse
+  shots_off_target: number; // Finalizações erradas
+  fouls_committed: number;
+  yellow_cards: number;
+  red_cards: number;
+  marking_lapses: number; // Perda de marcação
+  
+  overall_rating: number; // Nota do jogo (0 a 10)
+  coach_notes: string;
+}
+
+export interface TrainingPhysicalScout {
+  id: string;
+  student_id: string;
+  evaluated_at: string;
+  coach_name: string;
+  
+  // Medições e Notas Físico-Motoras (1 a 100 ou tempo)
+  speed_20m_sec: number; // Tempo sprint (segundos)
+  speed_rating: number; // Velocidade (1 a 100)
+  
+  strength_rating: number; // Força corporal & impacto (1 a 100)
+  shot_power_kmh: number; // Potência de chute estimada (km/h)
+  
+  agility_circuit_sec: number; // Teste de agilidade cones (segundos)
+  coordination_rating: number; // Coordenação motora (1 a 100)
+  
+  endurance_rating: number; // Resistência e fôlego (1 a 100)
+  
+  // Observações de Treino
+  strengths_in_training: string[]; // O que foi ótimo no treino
+  improvements_in_training: string[]; // O que falhou no treino
+  overall_physical_score: number; // Média física global
+}
+
+

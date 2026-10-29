@@ -11,7 +11,9 @@ import {
   AssessmentDimensionInfo,
   SkillCriterion,
   AthleteAssessment,
-  AthleteGoal
+  AthleteGoal,
+  MatchScoutStats,
+  TrainingPhysicalScout
 } from './types';
 
 export const mockModalities: Modality[] = [
@@ -1050,4 +1052,261 @@ export const mockAthleteAssessments: AthleteAssessment[] = [
     goals: [],
   },
 ];
+
+// ==========================================
+// DADOS DO MÓDULO: SCOUT DO JOGADOR
+// ==========================================
+
+export const mockMatchScouts: MatchScoutStats[] = [
+  {
+    id: 'scout-m-1',
+    student_id: 'stu-1',
+    student_name: 'Lucas Silveira',
+    position: 'Meio-Campo',
+    match_type: 'amistoso',
+    match_date: '2026-10-24',
+    opponent_context: 'Amistoso vs Projeto Craques da Vila',
+    minutes_played: 40,
+    goals: 1,
+    assists: 2,
+    passes_completed: 28,
+    tackles_successful: 5,
+    saves_or_blocks: 1,
+    dribbles_successful: 4,
+    fouls_received: 3,
+    passes_missed: 3,
+    balls_lost: 2,
+    shots_off_target: 1,
+    fouls_committed: 1,
+    yellow_cards: 0,
+    red_cards: 0,
+    marking_lapses: 0,
+    overall_rating: 9.2,
+    coach_notes: 'Atuação de gala! Ditou o ritmo no meio-campo, distribuiu duas assistências precisas e marcou um belo gol de fora da área.',
+  },
+  {
+    id: 'scout-m-2',
+    student_id: 'stu-2',
+    student_name: 'Gabriel Duarte Santos',
+    position: 'Atacante',
+    match_type: 'coletivo_treino',
+    match_date: '2026-10-22',
+    opponent_context: 'Coletivo Tático - Equipe Colete Azul vs Vermelho',
+    minutes_played: 35,
+    goals: 3,
+    assists: 0,
+    passes_completed: 9,
+    tackles_successful: 1,
+    saves_or_blocks: 0,
+    dribbles_successful: 6,
+    fouls_received: 4,
+    passes_missed: 5,
+    balls_lost: 6,
+    shots_off_target: 2,
+    fouls_committed: 3,
+    yellow_cards: 1,
+    red_cards: 0,
+    marking_lapses: 2,
+    overall_rating: 7.8,
+    coach_notes: 'Excelente faro de gol e chutes letais de canhota (hat-trick). No entanto, precisa soltar a bola mais rápido: perdeu 6 posses tentando driblar 2 marcadores e tomou amarelo por reclamação.',
+  },
+  {
+    id: 'scout-m-3',
+    student_id: 'stu-3',
+    student_name: 'Matheus Mendes',
+    position: 'Goleiro',
+    match_type: 'campeonato',
+    match_date: '2026-10-18',
+    opponent_context: 'Copa Regional Sub-13 - 1ª Rodada',
+    minutes_played: 50,
+    goals: 0,
+    assists: 1, // Reposição direta para gol!
+    passes_completed: 18,
+    tackles_successful: 2,
+    saves_or_blocks: 8, // 8 defesas difíceis!
+    dribbles_successful: 0,
+    fouls_received: 1,
+    passes_missed: 2,
+    balls_lost: 0,
+    shots_off_target: 0,
+    fouls_committed: 0,
+    yellow_cards: 0,
+    red_cards: 0,
+    marking_lapses: 0,
+    overall_rating: 9.6,
+    coach_notes: 'Muralha! 8 defesas decisivas, pegou chute à queima-roupa e deu uma assistência com reposição rápida nas costas do lateral adversário.',
+  },
+  {
+    id: 'scout-m-4',
+    student_id: 'stu-5',
+    student_name: 'Thiago Bastos',
+    position: 'Zagueiro',
+    match_type: 'amistoso',
+    match_date: '2026-10-24',
+    opponent_context: 'Amistoso Preparatório Sub-15',
+    minutes_played: 50,
+    goals: 0,
+    assists: 0,
+    passes_completed: 24,
+    tackles_successful: 8, // Desarmes limpos
+    saves_or_blocks: 3, // Bloqueios de chutes
+    dribbles_successful: 1,
+    fouls_received: 2,
+    passes_missed: 4,
+    balls_lost: 1,
+    shots_off_target: 1,
+    fouls_committed: 2,
+    yellow_cards: 1, // Falta tática para parar contra-ataque
+    red_cards: 0,
+    marking_lapses: 1,
+    overall_rating: 8.5,
+    coach_notes: 'Imponente nos duelos corpo a corpo. Ganhou quase todas pelo alto e fez 8 desarmes precisos. Cometeu 1 falta tática necessária que resultou em amarelo.',
+  },
+  {
+    id: 'scout-m-5',
+    student_id: 'stu-4',
+    student_name: 'Enzo Fontes',
+    position: 'Lateral',
+    match_type: 'coletivo_treino',
+    match_date: '2026-10-21',
+    opponent_context: 'Treino de Transições Ofensivas e Cruzamento',
+    minutes_played: 40,
+    goals: 0,
+    assists: 1,
+    passes_completed: 16,
+    tackles_successful: 4,
+    saves_or_blocks: 1,
+    dribbles_successful: 3,
+    fouls_received: 1,
+    passes_missed: 4,
+    balls_lost: 3,
+    shots_off_target: 0,
+    fouls_committed: 1,
+    yellow_cards: 0,
+    red_cards: 0,
+    marking_lapses: 2,
+    overall_rating: 7.9,
+    coach_notes: 'Muito vigor físico subindo e descendo o corredor. Ótimo cruzamento para gol, mas precisa ficar atento com as costas na transição defensiva.',
+  },
+];
+
+export const mockPhysicalScouts: Record<string, TrainingPhysicalScout> = {
+  'stu-1': {
+    id: 'phys-1',
+    student_id: 'stu-1',
+    evaluated_at: '2026-10-20',
+    coach_name: 'Prof. Carlos Eduardo',
+    speed_20m_sec: 3.52,
+    speed_rating: 84,
+    strength_rating: 76,
+    shot_power_kmh: 64,
+    agility_circuit_sec: 11.8,
+    coordination_rating: 91,
+    endurance_rating: 88,
+    overall_physical_score: 85,
+    strengths_in_training: [
+      'Excelente agilidade motora entre as estacas (11.8s)',
+      'Coordenação refinada em exercícios bimanual e pedal',
+      'Alto fôlego e disposição nas repetições intensas'
+    ],
+    improvements_in_training: [
+      'Aumentar sustentação corporal no choque ombro a ombro',
+      'Intensificar potência de finalização com perna esquerda'
+    ],
+  },
+  'stu-2': {
+    id: 'phys-2',
+    student_id: 'stu-2',
+    evaluated_at: '2026-10-18',
+    coach_name: 'Prof. Marcos Vinícius',
+    speed_20m_sec: 3.28,
+    speed_rating: 94, // Muito veloz!
+    strength_rating: 86,
+    shot_power_kmh: 78,
+    agility_circuit_sec: 12.4,
+    coordination_rating: 78,
+    endurance_rating: 68, // Queda no final!
+    overall_physical_score: 82,
+    strengths_in_training: [
+      'Velocidade pura impressionante (3.28s no tiro de 20m)',
+      'Potência de chute de canhota acima da média (78 km/h)',
+      'Arrancada inicial explosiva'
+    ],
+    improvements_in_training: [
+      'Queda acentuada de resistência após os primeiros 25 minutos',
+      'Desconcentração durante a fila de espera do circuito',
+      'Precisa trabalhar coordenação motora com o pé direito'
+    ],
+  },
+  'stu-3': {
+    id: 'phys-3',
+    student_id: 'stu-3',
+    evaluated_at: '2026-10-19',
+    coach_name: 'Prof. Carlos Eduardo',
+    speed_20m_sec: 3.75,
+    speed_rating: 74,
+    strength_rating: 88,
+    shot_power_kmh: 70,
+    agility_circuit_sec: 11.2,
+    coordination_rating: 92,
+    endurance_rating: 85,
+    overall_physical_score: 87,
+    strengths_in_training: [
+      'Tempo de reação e reflexo de mãos espetacular',
+      'Impulsão vertical excelente para alcançar bolas no ângulo',
+      'Firmeza na sustentação e queda lateral'
+    ],
+    improvements_in_training: [
+      'Agilidade na recuperação rápida após queda no chão',
+      'Potência no tiro de meta com o pé esquerdo'
+    ],
+  },
+  'stu-5': {
+    id: 'phys-4',
+    student_id: 'stu-5',
+    evaluated_at: '2026-10-17',
+    coach_name: 'Prof. Marcos Vinícius',
+    speed_20m_sec: 3.48,
+    speed_rating: 82,
+    strength_rating: 91, // Força dominante!
+    shot_power_kmh: 81,
+    agility_circuit_sec: 12.9,
+    coordination_rating: 80,
+    endurance_rating: 84,
+    overall_physical_score: 85,
+    strengths_in_training: [
+      'Força física dominante no combate 1v1',
+      'Excelente impulsão no cabeceio defensivo',
+      'Boa recuperação física pós-tendinite'
+    ],
+    improvements_in_training: [
+      'Giro de quadril e velocidade de recuperação em bolas enfiadas nas costas',
+      'Suavizar a entrada nos treinos com colegas menores'
+    ],
+  },
+  'stu-4': {
+    id: 'phys-5',
+    student_id: 'stu-4',
+    evaluated_at: '2026-10-15',
+    coach_name: 'Prof. Marcos Vinícius',
+    speed_20m_sec: 3.39,
+    speed_rating: 88,
+    strength_rating: 74,
+    shot_power_kmh: 62,
+    agility_circuit_sec: 11.9,
+    coordination_rating: 83,
+    endurance_rating: 93, // Fôlego absurdo!
+    overall_physical_score: 84,
+    strengths_in_training: [
+      'Resistência aeróbica excepcional: corre sem parar todo o treino',
+      'Boa aceleração ao longo da linha lateral',
+      'Dedicação e cumprimento de todas as repetições sem reclamar'
+    ],
+    improvements_in_training: [
+      'Potência muscular para aguentar divididas fortes',
+      'Ajustar equilíbrio postural no momento do cruzamento'
+    ],
+  },
+};
+
 
