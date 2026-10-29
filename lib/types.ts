@@ -11,20 +11,25 @@ export type BillingFrequency = 'monthly' | 'quarterly' | 'semiannual' | 'annual'
 export type SoccerPosition = 'Goleiro' | 'Zagueiro' | 'Lateral' | 'Meio-Campo' | 'Atacante' | 'Fixo' | 'Ala' | 'Pivô';
 export type DominantFoot = 'Destro' | 'Canhoto' | 'Ambidestro';
 
-// Dimensões de Gamificação Esportiva
+// Dimensões de Gamificação & Evolução do Aluno (Técnica + Comportamento + Presença)
 export type SportSkillDimension = 
   | 'passe_dominio' 
   | 'finalizacao_chute' 
   | 'drible_conducao' 
   | 'marcacao_desarme' 
+  | 'presenca_constante'
+  | 'pontualidade_compromisso'
+  | 'escuta_atencao'
   | 'disciplina_fairplay' 
-  | 'trabalho_equipe';
+  | 'trabalho_equipe'
+  | 'superacao_esforco';
 
 export interface SportSkillPoint {
   id: string;
   student_id: string;
   dimension: SportSkillDimension;
   dimension_label: string;
+  category: 'comportamento_presenca' | 'fundamento_tecnico';
   points: number;
   notes?: string;
   awarded_by: string;
@@ -118,12 +123,16 @@ export interface Student {
     agreed_amount: number;
   };
   financial_status?: 'ok' | 'overdue' | 'pending';
-  // Gamificação Esportiva
+  // Gamificação Esportiva & Formação do Aluno
   total_points?: number;
   stars_count?: number;
   player_level?: 'Iniciante' | 'Em Formação' | 'Destaque' | 'Craque da Turma';
   attendance_rate?: number; // % presença nos últimos 30 dias
   consecutive_absences?: number; // Radar de evasão
+  behavior_score?: number; // Nota de Comportamento e Convivência (1 a 100)
+  presence_streak?: number; // Sequência de treinos consecutivos com presença
+  evolution_badge?: string; // Destaque pedagógico (ex: 'Exemplo de Conduta', 'Presença de Ouro')
+  behavior_notes?: string;
 }
 
 export interface Enrollment {

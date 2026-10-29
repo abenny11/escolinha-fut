@@ -135,6 +135,10 @@ export const mockStudents: Student[] = [
     player_level: 'Destaque',
     attendance_rate: 92,
     consecutive_absences: 0,
+    behavior_score: 98,
+    presence_streak: 8,
+    evolution_badge: 'Exemplo de Conduta & Liderança',
+    behavior_notes: 'Extremamente respeitoso com os colegas, ajuda os novos alunos e escuta atentamente o professor.',
   },
   {
     id: 'stu-2',
@@ -156,6 +160,10 @@ export const mockStudents: Student[] = [
     player_level: 'Em Formação',
     attendance_rate: 55, // Alerta de evasão!
     consecutive_absences: 3, // 3 faltas seguidas!
+    behavior_score: 74,
+    presence_streak: 0,
+    evolution_badge: 'Superação em Andamento',
+    behavior_notes: 'Talentoso, mas precisa de incentivo na pontualidade e controle emocional quando a jogada não sai.',
   },
   {
     id: 'stu-3',
@@ -177,6 +185,10 @@ export const mockStudents: Student[] = [
     player_level: 'Craque da Turma',
     attendance_rate: 96,
     consecutive_absences: 0,
+    behavior_score: 96,
+    presence_streak: 12,
+    evolution_badge: 'Presença de Ouro & Dedicação',
+    behavior_notes: 'Chega sempre com antecedência, uniforme impecável e lidera a equipe pelo exemplo positivo.',
   },
   {
     id: 'stu-4',
@@ -198,6 +210,10 @@ export const mockStudents: Student[] = [
     player_level: 'Em Formação',
     attendance_rate: 70, // Em atenção
     consecutive_absences: 1,
+    behavior_score: 90,
+    presence_streak: 4,
+    evolution_badge: 'Maior Superação do Mês',
+    behavior_notes: 'Evoluiu muito na atenção e no trabalho em equipe nos últimos 30 dias.',
   },
   {
     id: 'stu-5',
@@ -219,6 +235,10 @@ export const mockStudents: Student[] = [
     player_level: 'Destaque',
     attendance_rate: 88,
     consecutive_absences: 0,
+    behavior_score: 95,
+    presence_streak: 10,
+    evolution_badge: 'Disciplina & Fair Play',
+    behavior_notes: 'Excelente senso de justiça e postura madura com os adversários e árbitros.',
   },
   {
     id: 'stu-6',
@@ -240,17 +260,98 @@ export const mockStudents: Student[] = [
     player_level: 'Em Formação',
     attendance_rate: 85,
     consecutive_absences: 0,
+    behavior_score: 88,
+    presence_streak: 6,
+    evolution_badge: 'Alegria & Cooperação',
+    behavior_notes: 'Muito participativo, guarda suas coisas sozinho e é muito querido por todos na turma.',
   },
 ];
 
-// Catálogo de Fundamentos Esportivos para Gamificação
+// Catálogo Completo: Formação do Aluno (Presença & Comportamento) + Fundamentos Esportivos
 export const mockSportsSkills = [
-  { dimension: 'passe_dominio' as SportSkillDimension, label: 'Passe & Controle de Bola', points: 15, icon: '⚽', desc: 'Precisão nos passes curtos/longos e domínio orientado' },
-  { dimension: 'finalizacao_chute' as SportSkillDimension, label: 'Finalização & Chute a Gol', points: 20, icon: '🎯', desc: 'Pontaria, potência e oportunismo na área' },
-  { dimension: 'drible_conducao' as SportSkillDimension, label: 'Drible & Condução Rápida', points: 15, icon: '⚡', desc: 'Habilidade individual de 1 contra 1 e mudança de direção' },
-  { dimension: 'marcacao_desarme' as SportSkillDimension, label: 'Desarme & Postura Defensiva', points: 15, icon: '🛡️', desc: 'Tempo de bola, interceptação e recuperação na defesa' },
-  { dimension: 'disciplina_fairplay' as SportSkillDimension, label: 'Disciplina & Fair Play', points: 20, icon: '🏆', desc: 'Respeito aos colegas, adversários, juiz e regras do jogo' },
-  { dimension: 'trabalho_equipe' as SportSkillDimension, label: 'Comunicação & Espírito de Equipe', points: 20, icon: '🤝', desc: 'Incentivo aos companheiros e visão tática coletiva' },
+  // PILAR 1: FORMAÇÃO HUMANA & COMPORTAMENTO DO ALUNO
+  { 
+    dimension: 'presenca_constante' as SportSkillDimension, 
+    label: 'Assiduidade & Presença Constante', 
+    category: 'comportamento_presenca' as const, 
+    points: 25, 
+    icon: '📅', 
+    desc: 'Frequência exemplar nos treinos do mês sem faltas injustificadas' 
+  },
+  { 
+    dimension: 'pontualidade_compromisso' as SportSkillDimension, 
+    label: 'Pontualidade & Zelo com Material', 
+    category: 'comportamento_presenca' as const, 
+    points: 15, 
+    icon: '⏰', 
+    desc: 'Chegou no horário com uniforme completo, caneleira e garrafinha d’água' 
+  },
+  { 
+    dimension: 'escuta_atencao' as SportSkillDimension, 
+    label: 'Atenção & Escuta Ativa na Rodinha', 
+    category: 'comportamento_presenca' as const, 
+    points: 20, 
+    icon: '👂', 
+    desc: 'Foco total nas explicações do treinador, ouvindo com respeito sem dispersar' 
+  },
+  { 
+    dimension: 'disciplina_fairplay' as SportSkillDimension, 
+    label: 'Disciplina, Respeito & Fair Play', 
+    category: 'comportamento_presenca' as const, 
+    points: 25, 
+    icon: '🤝', 
+    desc: 'Respeito aos colegas, adversários, árbitros e cumprimento de combinados' 
+  },
+  { 
+    dimension: 'trabalho_equipe' as SportSkillDimension, 
+    label: 'Espírito Coletivo & Solidariedade', 
+    category: 'comportamento_presenca' as const, 
+    points: 20, 
+    icon: '🌟', 
+    desc: 'Ajudou o colega que errou, comemorou o gol do amigo e colaborou com a turma' 
+  },
+  { 
+    dimension: 'superacao_esforco' as SportSkillDimension, 
+    label: 'Superação & Dedicação Individual', 
+    category: 'comportamento_presenca' as const, 
+    points: 30, 
+    icon: '📈', 
+    desc: 'Não desistiu diante de uma dificuldade motora e deu o seu melhor até o fim' 
+  },
+
+  // PILAR 2: FUNDAMENTOS TÉCNICOS ESPORTIVOS (COM A BOLA)
+  { 
+    dimension: 'passe_dominio' as SportSkillDimension, 
+    label: 'Passe & Controle de Bola', 
+    category: 'fundamento_tecnico' as const, 
+    points: 15, 
+    icon: '⚽', 
+    desc: 'Precisão nos passes curtos/longos e domínio orientado' 
+  },
+  { 
+    dimension: 'finalizacao_chute' as SportSkillDimension, 
+    label: 'Finalização & Chute a Gol', 
+    category: 'fundamento_tecnico' as const, 
+    points: 20, 
+    icon: '🎯', 
+    desc: 'Pontaria, potência e oportunismo na área' 
+  },
+  { 
+    dimension: 'drible_conducao' as SportSkillDimension, 
+    label: 'Drible & Condução Rápida', 
+    category: 'fundamento_tecnico' as const, 
+    points: 15, 
+    icon: '⚡', 
+    desc: 'Habilidade individual de 1 contra 1 e mudança de direção' 
+  },
+  { 
+    dimension: 'marcacao_desarme' as SportSkillDimension, 
+    label: 'Desarme & Postura Defensiva', 
+    category: 'fundamento_tecnico' as const, 
+    points: 15, 
+    icon: '🛡️', 
+    desc: 'Tempo de bola, interceptação e recuperação na defesa' 
+  },
 ];
 
 export const mockSessions: Session[] = [
