@@ -1,103 +1,270 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import Link from 'next/link';
+import { 
+  Users, 
+  CircleDollarSign, 
+  AlertTriangle, 
+  CalendarCheck, 
+  UserPlus, 
+  CheckCircle2, 
+  Clock, 
+  ChevronRight,
+  PhoneCall
+} from 'lucide-react';
+import { mockSessions, mockCharges } from '@/lib/mock-data';
+
+export default function DashboardPage() {
+  const pendingCharges = mockCharges.filter(c => c.status === 'overdue' || c.status === 'pending');
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="space-y-6">
+      {/* Top Banner de Boas-vindas */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            Visão Geral ⚽
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Resumo em tempo real da sua escolinha esportiva.
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Status Operacional */}
+        <div className="flex items-center gap-2 bg-slate-800/80 border border-slate-700/60 rounded-xl px-3.5 py-1.5 self-start sm:self-auto">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-xs font-medium text-slate-300">Sistema Operacional: Temporada Ativa</span>
+        </div>
+      </div>
+
+      {/* Grid de 4 Cards de Métricas Principais (Conforme MVP) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Alunos Ativos */}
+        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Alunos Ativos</span>
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+              <Users size={20} />
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-white">86</span>
+            <span className="text-xs text-emerald-400 font-semibold flex items-center">
+              +4 este mês
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">Capacidade geral: 95 vagas</p>
+        </div>
+
+        {/* Card 2: Recebido no Mês */}
+        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Recebido no Mês</span>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+              <CircleDollarSign size={20} />
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-emerald-400">R$ 5.840</span>
+            <span className="text-xs text-slate-400 font-medium">Outubro</span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">48 mensalidades quitadas</p>
+        </div>
+
+        {/* Card 3: Em Atraso */}
+        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Em Atraso</span>
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center border border-rose-500/20">
+              <AlertTriangle size={20} />
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-rose-400">R$ 920</span>
+            <span className="text-xs text-rose-400/80 font-medium">6 alunos</span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">Cobrança via WhatsApp disponível</p>
+        </div>
+
+        {/* Card 4: Presença Média */}
+        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Presença Média</span>
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+              <CalendarCheck size={20} />
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-white">82%</span>
+            <span className="text-xs text-emerald-400 font-semibold flex items-center">
+              +3% vs set
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">Baseado nos treinos dos últimos 30 dias</p>
+        </div>
+      </div>
+
+      {/* Ações Rápidas (Exigência do MVP) */}
+      <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Ações Rápidas</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Link
+            href="/alunos"
+            className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-800/80 transition group"
+          >
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-105 transition">
+              <UserPlus size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Novo Aluno</p>
+              <p className="text-[11px] text-slate-400">Cadastrar e matricular</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/chamada"
+            className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-800/80 transition group"
+          >
+            <div className="w-9 h-9 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-105 transition">
+              <CalendarCheck size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Fazer Chamada</p>
+              <p className="text-[11px] text-slate-400">Lista do treino de hoje</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/financeiro"
+            className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 hover:bg-slate-800/80 transition group"
+          >
+            <div className="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-105 transition">
+              <CircleDollarSign size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Receber Pagamento</p>
+              <p className="text-[11px] text-slate-400">Baixa em mensalidade</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/turmas"
+            className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 hover:bg-slate-800/80 transition group"
+          >
+            <div className="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-105 transition">
+              <Clock size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Novo Treino</p>
+              <p className="text-[11px] text-slate-400">Agendar sessão</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      {/* Grid de 2 Colunas: Treinos de Hoje e Alertas Financeiros */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Próximos Treinos / Treinos de Hoje */}
+        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-base font-bold text-white">Treinos do Dia</h2>
+              <p className="text-xs text-slate-400">Agenda e status da chamada</p>
+            </div>
+            <Link href="/turmas" className="text-xs text-emerald-400 font-semibold hover:underline flex items-center gap-1">
+              Ver grade completa <ChevronRight size={14} />
+            </Link>
+          </div>
+
+          <div className="space-y-3 flex-1">
+            {mockSessions.slice(0, 3).map((session) => (
+              <div 
+                key={session.id}
+                className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700/60 flex flex-col items-center justify-center">
+                    <span className="text-xs font-bold text-slate-200">{session.starts_at}</span>
+                    <span className="text-[10px] text-slate-500">{session.location}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">{session.class_name}</h3>
+                    <p className="text-xs text-slate-400">{session.coach_name} • {session.modality_name}</p>
+                  </div>
+                </div>
+
+                <div>
+                  {session.attendance_completed ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <CheckCircle2 size={12} /> Chamada Feita
+                    </span>
+                  ) : (
+                    <Link
+                      href={`/chamada?sessao=${session.id}`}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shadow-sm"
+                    >
+                      Realizar Chamada
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Pendências Financeiras e Alertas de Mensalidade */}
+        <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-base font-bold text-white">Pendências Financeiras</h2>
+              <p className="text-xs text-slate-400">Cobranças vencidas ou próximas do vencimento</p>
+            </div>
+            <Link href="/financeiro" className="text-xs text-emerald-400 font-semibold hover:underline flex items-center gap-1">
+              Ver financeiro <ChevronRight size={14} />
+            </Link>
+          </div>
+
+          <div className="space-y-3 flex-1">
+            {pendingCharges.map((charge) => (
+              <div 
+                key={charge.id}
+                className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-white">{charge.student_name}</h3>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      charge.status === 'overdue' 
+                        ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' 
+                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    }`}>
+                      {charge.status === 'overdue' ? 'Vencida' : 'Pendente'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Resp: {charge.guardian_name} • Vencimento: {charge.due_date}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-bold text-slate-200">
+                    R$ {charge.final_amount.toFixed(2)}
+                  </span>
+                  <a
+                    href={`https://wa.me/55${charge.guardian_phone}?text=Ol%C3%A1%20${encodeURIComponent(charge.guardian_name)},%20lembrete%20da%20mensalidade%20do(a)%20${encodeURIComponent(charge.student_name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition"
+                    title="Cobrar via WhatsApp"
+                  >
+                    <PhoneCall size={16} />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
