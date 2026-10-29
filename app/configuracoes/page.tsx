@@ -16,7 +16,8 @@ import {
   Mail,
   User,
   Shield,
-  FileCheck
+  FileCheck,
+  AlertCircle
 } from 'lucide-react';
 import { mockModalities, mockPlans } from '@/lib/mock-data';
 
@@ -27,6 +28,8 @@ export default function ConfiguracoesPage() {
   const [newModalityName, setNewModalityName] = useState('');
   const [newModalityDesc, setNewModalityDesc] = useState('');
   const [savedSettings, setSavedSettings] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
   // Estado geral de configurações da escolinha
   const [config, setConfig] = useState({
@@ -103,15 +106,45 @@ export default function ConfiguracoesPage() {
     }
   };
 
-  // Salvar configurações
+  // Salvar configurações com validação de campos obrigatórios
   const handleSaveConfigs = () => {
+    const missing: string[] = [];
+
+    if (!config.schoolName?.trim()) missing.push('schoolName');
+    if (!config.tradeName?.trim()) missing.push('tradeName');
+    if (!config.documentNumber?.trim()) missing.push('documentNumber');
+    if (!config.directorName?.trim()) missing.push('directorName');
+    if (!config.phone?.trim()) missing.push('phone');
+    if (!config.email?.trim()) missing.push('email');
+    if (!config.postalCode?.trim()) missing.push('postalCode');
+    if (!config.addressStreet?.trim()) missing.push('addressStreet');
+    if (!config.addressNumber?.trim()) missing.push('addressNumber');
+    if (!config.addressNeighborhood?.trim()) missing.push('addressNeighborhood');
+    if (!config.addressCity?.trim()) missing.push('addressCity');
+    if (!config.addressState?.trim()) missing.push('addressState');
+    if (!config.pixKey?.trim()) missing.push('pixKey');
+    if (!config.pixHolderName?.trim()) missing.push('pixHolderName');
+
+    if (missing.length > 0) {
+      setInvalidFields(missing);
+      setErrorMessage(`Existem ${missing.length} campo(s) obrigatório(s) em branco. Por favor, preencha todos os campos sinalizados com asterisco (*).`);
+      setSavedSettings(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Se estiver tudo preenchido, salva no localStorage
+    setInvalidFields([]);
+    setErrorMessage(null);
+
     try {
       localStorage.setItem('escolinha_pro_settings', JSON.stringify(config));
+      localStorage.setItem('escolinha_school_configured', 'true');
     } catch {
       // localStorage indisponível ou cheio
     }
     setSavedSettings(true);
-    setTimeout(() => setSavedSettings(false), 3000);
+    setTimeout(() => setSavedSettings(false), 4000);
   };
 
   const handleAddModality = (e: React.FormEvent) => {
@@ -158,6 +191,16 @@ export default function ConfiguracoesPage() {
           <div>
             <p className="font-bold text-sm">Configurações salvas com sucesso!</p>
             <p className="text-xs text-emerald-400">Os dados foram atualizados e serão refletidos nos relatórios, chamadas e carteirinhas.</p>
+          </div>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 flex items-start gap-3 animate-fadeIn shadow-lg shadow-rose-950/30">
+          <AlertCircle size={20} className="shrink-0 mt-0.5 text-rose-400" />
+          <div>
+            <p className="font-bold text-sm">Atenção: Campos Obrigatórios em Branco!</p>
+            <p className="text-xs text-rose-400 mt-0.5">{errorMessage}</p>
           </div>
         </div>
       )}
@@ -277,70 +320,100 @@ export default function ConfiguracoesPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Nome Oficial da Escolinha / Razão Social</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Nome Oficial da Escolinha / Razão Social <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.schoolName}
                   onChange={e => setConfig({ ...config, schoolName: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('schoolName') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Nome Fantasia (Aparece no App)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Nome Fantasia (Aparece no App) <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.tradeName}
                   onChange={e => setConfig({ ...config, tradeName: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('tradeName') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">CNPJ ou CPF do Responsável</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  CNPJ ou CPF do Responsável <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.documentNumber}
                   onChange={e => setConfig({ ...config, documentNumber: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('documentNumber') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Diretor / Coordenador Técnico</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Diretor / Coordenador Técnico <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <div className="relative">
                   <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                   <input
                     type="text"
+                    required
                     value={config.directorName}
                     onChange={e => setConfig({ ...config, directorName: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className={`w-full bg-slate-900 border rounded-xl pl-9 pr-3.5 py-2 text-sm text-white focus:outline-none ${
+                      invalidFields.includes('directorName') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                    }`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">WhatsApp de Atendimento da Secretaria</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  WhatsApp de Atendimento da Secretaria <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <div className="relative">
                   <Phone size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                   <input
                     type="text"
+                    required
                     value={config.phone}
                     onChange={e => setConfig({ ...config, phone: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className={`w-full bg-slate-900 border rounded-xl pl-9 pr-3.5 py-2 text-sm text-white focus:outline-none ${
+                      invalidFields.includes('phone') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                    }`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">E-mail Institucional</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  E-mail Institucional <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <div className="relative">
                   <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                   <input
                     type="email"
+                    required
                     value={config.email}
                     onChange={e => setConfig({ ...config, email: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className={`w-full bg-slate-900 border rounded-xl pl-9 pr-3.5 py-2 text-sm text-white focus:outline-none ${
+                      invalidFields.includes('email') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                    }`}
                   />
                 </div>
               </div>
@@ -356,32 +429,47 @@ export default function ConfiguracoesPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">CEP</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  CEP <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.postalCode}
                   onChange={e => setConfig({ ...config, postalCode: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('postalCode') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Logradouro / Avenida / Rua</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Logradouro / Avenida / Rua <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.addressStreet}
                   onChange={e => setConfig({ ...config, addressStreet: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('addressStreet') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Número</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Número <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.addressNumber}
                   onChange={e => setConfig({ ...config, addressNumber: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('addressNumber') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
@@ -396,32 +484,47 @@ export default function ConfiguracoesPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Bairro</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Bairro <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.addressNeighborhood}
                   onChange={e => setConfig({ ...config, addressNeighborhood: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('addressNeighborhood') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Cidade</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Cidade <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.addressCity}
                   onChange={e => setConfig({ ...config, addressCity: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('addressCity') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Estado (UF)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Estado (UF) <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.addressState}
                   onChange={e => setConfig({ ...config, addressState: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('addressState') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
             </div>
@@ -481,23 +584,33 @@ export default function ConfiguracoesPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Chave PIX Oficial</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Chave PIX Oficial <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.pixKey}
                   onChange={e => setConfig({ ...config, pixKey: e.target.value })}
                   placeholder="Informe a chave exata para recebimento"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono"
+                  className={`w-full bg-slate-900 border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none font-mono ${
+                    invalidFields.includes('pixKey') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Nome do Titular da Conta</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Nome do Titular da Conta <span className="text-rose-400 font-bold">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={config.pixHolderName}
                   onChange={e => setConfig({ ...config, pixHolderName: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className={`w-full bg-slate-900 border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none ${
+                    invalidFields.includes('pixHolderName') ? 'border-rose-500 bg-rose-950/20' : 'border-slate-800 focus:border-emerald-500'
+                  }`}
                 />
               </div>
 

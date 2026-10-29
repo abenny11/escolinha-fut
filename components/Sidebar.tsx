@@ -54,7 +54,7 @@ export function Sidebar() {
     { href: '/financeiro', label: 'Financeiro & Rentabilidade', icon: CircleDollarSign, roles: ['admin', 'secretary'] },
     { href: '/comunicacao', label: 'Comunicação & Tarefas', icon: MessageSquare, roles: ['admin', 'secretary', 'coach'] },
     { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: Award, roles: ['admin', 'coach', 'guardian_portal'] },
-    { href: '/gamificacao', label: 'Evolução & Conquistas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
+    { href: '/gamificacao', label: 'Evolução Técnica & Estrelas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/portal-pais', label: 'Área do Responsável', icon: Users, roles: ['guardian_portal'] },
     { href: '/configuracoes', label: 'Configurações', icon: Settings, roles: ['admin', 'secretary'] },
   ];

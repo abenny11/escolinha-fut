@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Users, 
@@ -19,13 +20,66 @@ import {
   Target,
   ShieldCheck,
   Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  Check,
+  X
 } from 'lucide-react';
-import { mockSessions, mockCharges, mockManagementKPIs } from '@/lib/mock-data';
+import { mockSessions, mockCharges, mockManagementKPIs, mockStudents } from '@/lib/mock-data';
 
 export default function DashboardPage() {
   const pendingCharges = mockCharges.filter(c => c.status === 'overdue' || c.status === 'pending');
   const kpis = mockManagementKPIs;
+
+  // Estado do Sportdesk Workflow (Onboarding das 3 Etapas)
+  const [step1Done, setStep1Done] = useState(false);
+  const [step2Done, setStep2Done] = useState(false);
+  const [step3Done, setStep3Done] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+
+  useEffect(() => {
+    // Passo 1: Verifica se a escola já possui dados essenciais configurados
+    try {
+      const isConfigured = localStorage.getItem('escolinha_school_configured') === 'true';
+      const savedSettings = localStorage.getItem('escolinha_pro_settings');
+      if (isConfigured || savedSettings) {
+        setStep1Done(true);
+      }
+    } catch {
+      // fallback
+    }
+
+    // Passo 2: Alunos cadastrados (base ativa com alunos)
+    if (mockStudents && mockStudents.length > 0) {
+      setStep2Done(true);
+    }
+
+    // Passo 3: Operação centralizada (presenças, sessões ou financeiro ativos)
+    if (mockSessions && mockSessions.length > 0) {
+      setStep3Done(true);
+    }
+
+    try {
+      const dismissed = localStorage.getItem('sportdesk_workflow_dismissed') === 'true';
+      if (dismissed) {
+        setIsDismissed(true);
+      }
+    } catch {
+      // fallback
+    }
+  }, []);
+
+  // Quando completar os 3 passos, o banner some da tela para desocupar espaço de trabalho
+  const allStepsCompleted = step1Done && step2Done && step3Done;
+  const showWorkflowBanner = !isDismissed && !allStepsCompleted;
+
+  const handleDismissWorkflow = () => {
+    setIsDismissed(true);
+    try {
+      localStorage.setItem('sportdesk_workflow_dismissed', 'true');
+    } catch {
+      // fallback
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -54,70 +108,134 @@ export default function DashboardPage() {
       </div>
 
       {/* ======================================================== */}
-      {/* SPORTDESK: FLUXO DE GESTÃO EM 3 ETAPAS */}
+      {/* SPORTDESK: FLUXO DE GESTÃO EM 3 ETAPAS (ONBOARDING) */}
+      {/* Some da tela automaticamente quando os 3 passos estiverem concluídos */}
       {/* ======================================================== */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-emerald-500/30 rounded-2xl p-5 shadow-xl">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 block">SPORTDESK WORKFLOW</span>
-            <h2 className="text-base font-bold text-white">Como Funciona a Gestão da sua Escola</h2>
+      {showWorkflowBanner && (
+        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-emerald-500/30 rounded-2xl p-5 shadow-xl relative animate-fadeIn">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 block">SPORTDESK WORKFLOW</span>
+              <h2 className="text-base font-bold text-white">Como Funciona a Gestão da sua Escola</h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-400 hidden sm:block">Operação 100% Centralizada</span>
+              <button
+                type="button"
+                onClick={handleDismissWorkflow}
+                title="Dispensar guia de implantação"
+                className="text-slate-500 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
+              >
+                <X size={16} />
+              </button>
+            </div>
           </div>
-          <span className="text-xs text-slate-400 hidden sm:block">Operação 100% Centralizada</span>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {/* Passo 1 */}
+            <Link 
+              href="/configuracoes"
+              className={`p-4 rounded-xl border transition group relative ${
+                step1Done 
+                  ? 'bg-slate-950/90 border-emerald-500/40 hover:border-emerald-500' 
+                  : 'bg-slate-950/70 border-slate-800/80 hover:border-emerald-500/50 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className={`w-6 h-6 rounded-lg font-black text-xs flex items-center justify-center ${
+                    step1Done ? 'bg-emerald-500 text-slate-950' : 'bg-emerald-500 text-slate-950'
+                  }`}>
+                    {step1Done ? <Check size={14} strokeWidth={3} /> : '1'}
+                  </span>
+                  <h3 className="text-sm font-bold text-white group-hover:text-emerald-400 transition">
+                    Configure sua escola
+                  </h3>
+                </div>
+                {step1Done && (
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                    ✓ Concluído
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                Cadastre sua identidade, logotipo, unidades, modalidades, professores, planos e horários.
+              </p>
+              <span className="text-[11px] text-emerald-400 font-semibold mt-3 inline-block">
+                {step1Done ? 'Revisar configurações →' : 'Acessar configurações →'}
+              </span>
+            </Link>
+
+            {/* Passo 2 */}
+            <Link 
+              href="/alunos"
+              className={`p-4 rounded-xl border transition group relative ${
+                step2Done 
+                  ? 'bg-slate-950/90 border-emerald-500/40 hover:border-emerald-500' 
+                  : 'bg-slate-950/70 border-slate-800/80 hover:border-blue-500/50 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className={`w-6 h-6 rounded-lg font-black text-xs flex items-center justify-center ${
+                    step2Done ? 'bg-emerald-500 text-slate-950' : 'bg-blue-500 text-slate-950'
+                  }`}>
+                    {step2Done ? <Check size={14} strokeWidth={3} /> : '2'}
+                  </span>
+                  <h3 className="text-sm font-bold text-white group-hover:text-blue-400 transition">
+                    Cadastre seus alunos
+                  </h3>
+                </div>
+                {step2Done && (
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                    ✓ Concluído
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                Organize alunos, responsáveis, matrículas e informações financeiras em uma única base.
+              </p>
+              <span className="text-[11px] text-blue-400 font-semibold mt-3 inline-block">
+                {step2Done ? 'Gerenciar base de alunos →' : 'Cadastrar primeiros alunos →'}
+              </span>
+            </Link>
+
+            {/* Passo 3 */}
+            <a 
+              href="#indicadores"
+              className={`p-4 rounded-xl border transition group cursor-pointer relative ${
+                step3Done 
+                  ? 'bg-slate-950/90 border-emerald-500/40 hover:border-emerald-500' 
+                  : 'bg-slate-950/70 border-slate-800/80 hover:border-purple-500/50 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className={`w-6 h-6 rounded-lg font-black text-xs flex items-center justify-center ${
+                    step3Done ? 'bg-emerald-500 text-slate-950' : 'bg-purple-500 text-slate-950'
+                  }`}>
+                    {step3Done ? <Check size={14} strokeWidth={3} /> : '3'}
+                  </span>
+                  <h3 className="text-sm font-bold text-white group-hover:text-purple-400 transition">
+                    Centralize a operação
+                  </h3>
+                </div>
+                {step3Done && (
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                    ✓ Concluído
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                Use o Sportdesk no dia a dia para acompanhar presença, pagamentos, ocupação, comunicação e indicadores.
+              </p>
+              <span className="text-[11px] text-purple-400 font-semibold mt-3 inline-block">
+                Ver indicadores abaixo ↓
+              </span>
+            </a>
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          {/* Passo 1 */}
-          <Link 
-            href="/configuracoes"
-            className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-emerald-500/50 hover:bg-slate-900/60 transition group"
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded-lg bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center">1</span>
-              <h3 className="text-sm font-bold text-white group-hover:text-emerald-400 transition">Configure sua escola</h3>
-            </div>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-              Cadastre sua identidade, logotipo, unidades, modalidades, professores, planos e horários.
-            </p>
-            <span className="text-[11px] text-emerald-400 font-semibold mt-3 inline-block">
-              Acessar configurações →
-            </span>
-          </Link>
-
-          {/* Passo 2 */}
-          <Link 
-            href="/alunos"
-            className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-blue-500/50 hover:bg-slate-900/60 transition group"
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded-lg bg-blue-500 text-slate-950 font-black text-xs flex items-center justify-center">2</span>
-              <h3 className="text-sm font-bold text-white group-hover:text-blue-400 transition">Cadastre seus alunos</h3>
-            </div>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-              Organize alunos, responsáveis, matrículas e informações financeiras em uma única base.
-            </p>
-            <span className="text-[11px] text-blue-400 font-semibold mt-3 inline-block">
-              Ver base de alunos →
-            </span>
-          </Link>
-
-          {/* Passo 3 */}
-          <a 
-            href="#indicadores"
-            className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-purple-500/50 hover:bg-slate-900/60 transition group cursor-pointer"
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded-lg bg-purple-500 text-slate-950 font-black text-xs flex items-center justify-center">3</span>
-              <h3 className="text-sm font-bold text-white group-hover:text-purple-400 transition">Centralize a operação</h3>
-            </div>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-              Use o Sportdesk no dia a dia para acompanhar presença, pagamentos, ocupação, comunicação e indicadores.
-            </p>
-            <span className="text-[11px] text-purple-400 font-semibold mt-3 inline-block">
-              Ver indicadores abaixo ↓
-            </span>
-          </a>
-        </div>
-      </div>
+      )}
 
       {/* ======================================================== */}
       {/* INDICADORES DE GESTÃO EXECUTIVA (SPORTDESK KPIS) */}

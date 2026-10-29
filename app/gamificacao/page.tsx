@@ -8,10 +8,8 @@ import {
   X, 
   Search,
   CheckCircle,
-  Calendar,
-  Heart,
   Flame,
-  Award
+  Star
 } from 'lucide-react';
 import { mockStudents, mockSportsSkills, mockClasses } from '@/lib/mock-data';
 import { Student, SportSkillDimension } from '@/lib/types';
@@ -19,55 +17,32 @@ import { Student, SportSkillDimension } from '@/lib/types';
 export default function GamificacaoPage() {
   const [students, setStudents] = useState<Student[]>(mockStudents);
   const [selectedClassId, setSelectedClassId] = useState<string>('all');
-  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<'all' | 'presenca' | 'comportamento' | 'tecnico'>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Modal Atribuir Pontos
+  // Modal Atribuir Pontos / Estrela
   const [isAwardModalOpen, setIsAwardModalOpen] = useState(false);
   const [awardStudent, setAwardStudent] = useState<Student | null>(null);
-  const [selectedSkill, setSelectedSkill] = useState<SportSkillDimension>('presenca_constante');
-  const [selectedModalTab, setSelectedModalTab] = useState<'comportamento' | 'tecnico'>('comportamento');
+  const [selectedSkill, setSelectedSkill] = useState<SportSkillDimension>('passe_dominio');
   const [customNote, setCustomNote] = useState('');
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
-  // Filtragem e ordenação dos alunos
+  // Filtragem e ordenação decrescente por pontuação
   const filteredStudents = students
     .filter(s => {
       const matchesClass = selectedClassId === 'all' || s.current_class?.id === selectedClassId;
       const matchesSearch = s.full_name.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      let matchesCategory = true;
-      if (selectedCategoryFilter === 'presenca') {
-        matchesCategory = (s.attendance_rate || 0) >= 85;
-      } else if (selectedCategoryFilter === 'comportamento') {
-        matchesCategory = (s.behavior_score || 0) >= 90;
-      } else if (selectedCategoryFilter === 'tecnico') {
-        matchesCategory = (s.total_points || 0) >= 250;
-      }
-
-      return matchesClass && matchesSearch && matchesCategory;
+      return matchesClass && matchesSearch;
     })
-    .sort((a, b) => {
-      if (selectedCategoryFilter === 'presenca') {
-        return (b.attendance_rate || 0) - (a.attendance_rate || 0);
-      }
-      if (selectedCategoryFilter === 'comportamento') {
-        return (b.behavior_score || 0) - (a.behavior_score || 0);
-      }
-      return (b.total_points || 0) - (a.total_points || 0);
-    });
+    .sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
 
-  // Destaques da Semana da Escolinha
-  const topTechnical = [...students].sort((a, b) => (b.total_points || 0) - (a.total_points || 0))[0];
-  const topPresence = [...students].sort((a, b) => (b.attendance_rate || 0) - (a.attendance_rate || 0))[0];
-  const topBehavior = [...students].sort((a, b) => (b.behavior_score || 0) - (a.behavior_score || 0))[0];
+  // Craque da Semana (1º colocado do ranking)
+  const topAthlete = [...students].sort((a, b) => (b.total_points || 0) - (a.total_points || 0))[0] || students[0];
 
   const handleOpenAwardModal = (student: Student) => {
     setAwardStudent(student);
     setIsAwardModalOpen(true);
     setCustomNote('');
-    setSelectedSkill('presenca_constante');
-    setSelectedModalTab('comportamento');
+    setSelectedSkill('passe_dominio');
   };
 
   const handleConfirmAward = (e: React.FormEvent) => {
@@ -81,9 +56,6 @@ export default function GamificacaoPage() {
       if (s.id === awardStudent.id) {
         const newPoints = (s.total_points || 0) + addedPoints;
         const newStars = (s.stars_count || 0) + 1;
-        const newBehavior = skill?.category === 'comportamento_presenca' 
-          ? Math.min(100, (s.behavior_score || 85) + 3) 
-          : (s.behavior_score || 85);
         
         let newLevel: Student['player_level'] = s.player_level;
         if (newPoints >= 400) newLevel = 'Craque da Turma';
@@ -95,7 +67,6 @@ export default function GamificacaoPage() {
           total_points: newPoints,
           stars_count: newStars,
           player_level: newLevel,
-          behavior_score: newBehavior,
           behavior_notes: customNote ? customNote : s.behavior_notes
         };
       }
@@ -104,32 +75,34 @@ export default function GamificacaoPage() {
 
     setStudents(updated);
     setIsAwardModalOpen(false);
-    setSuccessToast(`Parabéns! +${addedPoints} pts e 1 estrela atribuídos a ${awardStudent.full_name} em "${skill?.label}"!`);
+    setSuccessToast(`Parabéns! +${addedPoints} pts e 1 estrela atribuídos a ${awardStudent.full_name}!`);
     setTimeout(() => setSuccessToast(null), 4000);
   };
 
-  // Separação dos fundamentos no catálogo
-  const behaviorSkills = mockSportsSkills.filter(s => s.category === 'comportamento_presenca');
-  const technicalSkills = mockSportsSkills.filter(s => s.category === 'fundamento_tecnico');
+  // Fundamentos principais em destaque
+  const highlightedSkills = [
+    { label: 'Passe & Domínio', points: '+15 pts', icon: '⚽' },
+    { label: 'Finalização & Chute', points: '+20 pts', icon: '🎯' },
+    { label: 'Marcação & Desarme', points: '+15 pts', icon: '🛡️' },
+    { label: 'Fair Play & Equipe', points: '+20 pts', icon: '🤝', highlight: true }
+  ];
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-              <Trophy size={13} /> Formação Cidadã & Mérito Esportivo
-            </span>
-            <span className="text-xs text-slate-400">Presença • Disciplina • Técnica</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
-            Evolução do Aluno & Estrelas de Mérito ⭐
-          </h1>
-          <p className="text-sm text-slate-400 max-w-2xl mt-1">
-            Reconhecimento integral: valorizamos a <strong>assiduidade (presença)</strong>, o <strong>respeito e convivência</strong> e a <strong>superação pessoal</strong>, além dos fundamentos com a bola.
-          </p>
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="px-2.5 py-1 rounded-md bg-[#eab308]/15 text-[#facc15] border border-[#eab308]/30 text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
+            <Trophy size={13} className="text-[#facc15]" /> PERFORMANCE & MÉRITO
+          </span>
+          <span className="text-xs text-slate-400 font-medium">Gamificação Esportiva</span>
         </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-2 flex items-center gap-2">
+          Evolução Técnica & Estrelas ⭐
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          Reconheça a dedicação, fundamentos e evolução dos atletas nos treinos.
+        </p>
       </div>
 
       {/* Toast de Sucesso */}
@@ -141,266 +114,173 @@ export default function GamificacaoPage() {
       )}
 
       {/* ======================================================== */}
-      {/* OS 3 DESTAQUES DA SEMANA (PRESENÇA, COMPORTAMENTO, TÉCNICA) */}
+      {/* HERO SECTION: CRAQUE DA SEMANA + FUNDAMENTOS AVALIADOS */}
       {/* ======================================================== */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* 1. Destaque em Presença & Compromisso */}
-        <div className="bg-gradient-to-br from-emerald-950/70 via-slate-950 to-slate-950 border border-emerald-800/40 rounded-2xl p-5 flex flex-col justify-between shadow-lg">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                <Calendar size={11} /> Presença de Ouro
-              </span>
-              <span className="text-xl">📅</span>
-            </div>
-            <h3 className="text-lg font-black text-white">{topPresence?.full_name}</h3>
-            <p className="text-xs text-slate-400 mt-0.5">{topPresence?.current_class?.name}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Craque da Semana (2 colunas no desktop) */}
+        <div className="lg:col-span-2 bg-[#0c1322]/80 border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-[#f59e0b] flex items-center justify-center text-3xl shadow-lg shadow-amber-500/20 text-slate-950 flex-shrink-0">
+            🏆
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-xs text-slate-400">Assiduidade:</span>
-            <span className="text-sm font-black text-emerald-400 flex items-center gap-1">
-              <Flame size={14} /> {topPresence?.attendance_rate}% ({topPresence?.presence_streak} treinos seguidos)
+
+          <div className="flex-1">
+            <span className="text-[11px] font-black uppercase tracking-widest text-[#f59e0b] block">
+              CRAQUE DA SEMANA
             </span>
+            <h2 className="text-2xl font-black text-white mt-0.5 tracking-tight">
+              {topAthlete.full_name}
+            </h2>
+            <p className="text-xs text-slate-400 mt-1 font-medium">
+              Posição: <strong className="text-slate-300 font-semibold">{topAthlete.position || 'Goleiro'}</strong> • Categoria: <strong className="text-slate-300 font-semibold">{topAthlete.current_class?.name || 'Sub-13 Tarde (Intermediário)'}</strong>
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2.5 mt-3.5">
+              <span className="px-3 py-1 rounded-full bg-[#2a1e0b] border border-[#f59e0b]/40 text-[#f59e0b] text-xs font-black flex items-center gap-1.5 shadow-sm">
+                <Star size={13} className="fill-[#f59e0b]" /> {topAthlete.total_points || 420} Pontos
+              </span>
+              <span className="px-3 py-1 rounded-full bg-[#0d2a1f] border border-[#10b981]/40 text-[#10b981] text-xs font-black flex items-center gap-1.5 shadow-sm">
+                <Flame size={13} className="fill-[#10b981]" /> {topAthlete.attendance_rate || 96}% Presença
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* 2. Destaque em Comportamento & Convivência */}
-        <div className="bg-gradient-to-br from-indigo-950/70 via-slate-950 to-slate-950 border border-indigo-800/40 rounded-2xl p-5 flex flex-col justify-between shadow-lg">
+        {/* Fundamentos Avaliados */}
+        <div className="bg-[#0c1322]/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
-                <Heart size={11} /> Exemplo de Conduta
-              </span>
-              <span className="text-xl">🤝</span>
+            <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-3">
+              FUNDAMENTOS AVALIADOS
+            </h3>
+            <div className="space-y-2 text-xs">
+              {highlightedSkills.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <span className={`flex items-center gap-2 font-medium ${item.highlight ? 'text-[#38bdf8] font-bold' : 'text-slate-200'}`}>
+                    <span>{item.icon}</span> {item.label}:
+                  </span>
+                  <strong className={`font-black ${item.highlight ? 'text-[#38bdf8]' : 'text-slate-300'}`}>
+                    {item.points}
+                  </strong>
+                </div>
+              ))}
             </div>
-            <h3 className="text-lg font-black text-white">{topBehavior?.full_name}</h3>
-            <p className="text-xs text-slate-400 mt-0.5">{topBehavior?.current_class?.name}</p>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-xs text-slate-400">Nota de Conduta:</span>
-            <span className="text-sm font-black text-indigo-300 flex items-center gap-1">
-              <CheckCircle size={14} /> {topBehavior?.behavior_score} / 100 (Fair Play)
-            </span>
-          </div>
-        </div>
 
-        {/* 3. Destaque Técnico / Craque com a Bola */}
-        <div className="bg-gradient-to-br from-amber-950/70 via-slate-950 to-slate-950 border border-amber-800/40 rounded-2xl p-5 flex flex-col justify-between shadow-lg">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                <Trophy size={11} /> Craque da Semana
-              </span>
-              <span className="text-xl">⚽</span>
-            </div>
-            <h3 className="text-lg font-black text-white">{topTechnical?.full_name}</h3>
-            <p className="text-xs text-slate-400 mt-0.5">{topTechnical?.current_class?.name}</p>
-          </div>
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-xs text-slate-400">Pontuação Total:</span>
-            <span className="text-sm font-black text-amber-400 flex items-center gap-1">
-              ⭐ {topTechnical?.total_points} pts ({topTechnical?.stars_count} estrelas)
-            </span>
-          </div>
+          <p className="text-[11px] font-semibold text-[#10b981] mt-4 pt-3 border-t border-slate-800/80">
+            Atribua estrelas no final de cada treino!
+          </p>
         </div>
       </div>
 
       {/* ======================================================== */}
-      {/* BARRA DE FILTROS & PESQUISA */}
+      {/* BARRA DE PESQUISA & FILTRO POR TURMA */}
       {/* ======================================================== */}
-      <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-center justify-between">
-        <div className="flex-1 relative w-full">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="md:col-span-3 relative">
+          <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Buscar aluno por nome..."
+            placeholder="Buscar atleta por nome..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+            className="w-full bg-[#0b1120] border border-slate-800/90 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#f59e0b]/60 transition"
           />
         </div>
 
-        {/* Filtro por Turma */}
-        <select
-          value={selectedClassId}
-          onChange={(e) => setSelectedClassId(e.target.value)}
-          className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-amber-500 w-full md:w-auto"
-        >
-          <option value="all">Todas as turmas</option>
-          {mockClasses.map(c => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-
-        {/* Filtro por Pilar de Reconhecimento */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          <button
-            onClick={() => setSelectedCategoryFilter('all')}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              selectedCategoryFilter === 'all' 
-                ? 'bg-amber-500 text-slate-950' 
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-            }`}
+        <div>
+          <select
+            value={selectedClassId}
+            onChange={(e) => setSelectedClassId(e.target.value)}
+            className="w-full bg-[#0b1120] border border-slate-800/90 rounded-xl px-4 py-3 text-sm font-medium text-slate-300 focus:outline-none focus:border-[#f59e0b]/60 transition cursor-pointer"
           >
-            Todos
-          </button>
-          <button
-            onClick={() => setSelectedCategoryFilter('presenca')}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1 ${
-              selectedCategoryFilter === 'presenca' 
-                ? 'bg-emerald-500 text-slate-950' 
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-            }`}
-          >
-            <Calendar size={13} /> Presença
-          </button>
-          <button
-            onClick={() => setSelectedCategoryFilter('comportamento')}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1 ${
-              selectedCategoryFilter === 'comportamento' 
-                ? 'bg-indigo-500 text-white' 
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-            }`}
-          >
-            <Heart size={13} /> Comportamento
-          </button>
-          <button
-            onClick={() => setSelectedCategoryFilter('tecnico')}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1 ${
-              selectedCategoryFilter === 'tecnico' 
-                ? 'bg-amber-500 text-slate-950' 
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-            }`}
-          >
-            <Trophy size={13} /> Técnica
-          </button>
+            <option value="all">Todas as turmas</option>
+            {mockClasses.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
       </div>
 
       {/* ======================================================== */}
-      {/* GRID DE CARDS DOS ALUNOS COM PRESENÇA + COMPORTAMENTO + TÉCNICA */}
+      {/* GRID DE CARDS DOS ATLETAS (LAYOUT 3 COLUNAS) */}
       {/* ======================================================== */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredStudents.map((student, index) => {
-          const isTop3 = index < 3;
+          const rank = index + 1;
+
+          // Badges de colocação (1º ouro, 2º prata, 3º bronze, demais escuro)
+          const rankBadgeStyle = 
+            rank === 1 ? 'bg-[#3b2710] border border-[#f59e0b]/50 text-[#f59e0b]' :
+            rank === 2 ? 'bg-[#1e293b] border border-slate-500/50 text-slate-200' :
+            rank === 3 ? 'bg-[#38261e] border border-amber-700/50 text-amber-300' :
+            'bg-[#131d2e] border border-slate-700/60 text-slate-300';
+
+          // Nível esportivo (Craque da Turma, Destaque, Em Formação)
+          const levelBadgeStyle = 
+            student.player_level === 'Craque da Turma' ? 'bg-[#2b1c09] text-[#f59e0b] border border-[#f59e0b]/40' :
+            student.player_level === 'Destaque' ? 'bg-[#0b2b1d] text-[#10b981] border border-[#10b981]/40' :
+            'bg-[#0c1f38] text-[#38bdf8] border border-[#38bdf8]/40';
 
           return (
             <div
               key={student.id}
-              className={`
-                p-5 rounded-2xl border transition-all duration-150 flex flex-col justify-between gap-4
-                ${isTop3 
-                  ? 'bg-slate-950/90 border-amber-500/30 shadow-md shadow-amber-500/5' 
-                  : 'bg-slate-950/70 border-slate-800/80 hover:border-slate-700'
-                }
-              `}
+              className="bg-[#0b1120] border border-slate-800/90 hover:border-slate-700 rounded-2xl p-5 flex flex-col justify-between gap-4 transition shadow-lg"
             >
               <div>
-                {/* Header do Card */}
+                {/* Linha superior: Rank + Nome + Categoria + Badge */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
-                    <div className={`
-                      w-11 h-11 rounded-2xl flex items-center justify-center font-black text-sm border
-                      ${index === 0 ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 text-base' :
-                        index === 1 ? 'bg-slate-300/20 text-slate-200 border-slate-300/40' :
-                        index === 2 ? 'bg-amber-800/20 text-amber-600 border-amber-700/40' :
-                        'bg-slate-900 text-slate-400 border-slate-800'}
-                    `}>
-                      {index + 1}º
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-xs shrink-0 ${rankBadgeStyle}`}>
+                      {rank}º
                     </div>
                     <div>
-                      <h3 className="font-bold text-white text-sm">{student.full_name}</h3>
-                      <p className="text-xs text-slate-400">
-                        {student.position || 'Geral'} • {student.current_class?.name}
+                      <h3 className="font-bold text-white text-sm leading-tight">
+                        {student.full_name}
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {student.position || 'Geral'} • {student.current_class?.name || 'Formação'}
                       </p>
                     </div>
                   </div>
 
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    student.player_level === 'Craque da Turma' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                    student.player_level === 'Destaque' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                    'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  }`}>
-                    {student.player_level}
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0 ${levelBadgeStyle}`}>
+                    {student.player_level || 'Em Formação'}
                   </span>
                 </div>
 
-                {/* Badge de Reconhecimento Pedagógico */}
-                {student.evolution_badge && (
-                  <div className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-semibold text-emerald-400">
-                    <Award size={13} className="text-amber-400" />
-                    <span>{student.evolution_badge}</span>
+                {/* Linha de Pontos & Estrelas */}
+                <div className="flex items-center justify-between mt-5 pt-3 border-t border-slate-800/60">
+                  <div className="flex items-center gap-1.5 text-sm font-black text-[#facc15]">
+                    <Star size={15} className="fill-[#facc15]" />
+                    <span>{student.total_points || 180} pts</span>
                   </div>
-                )}
-
-                {/* Os 3 Pilares Visuais do Aluno */}
-                <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-800/80 text-center">
-                  {/* Presença */}
-                  <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
-                    <span className="text-[10px] text-slate-400 block font-medium">Presença</span>
-                    <strong className={`text-xs font-black block mt-0.5 ${
-                      (student.attendance_rate || 0) >= 85 ? 'text-emerald-400' : 'text-amber-400'
-                    }`}>
-                      {student.attendance_rate}%
-                    </strong>
-                    <span className="text-[9px] text-slate-500 block truncate">
-                      {student.presence_streak || 0} treinos
-                    </span>
-                  </div>
-
-                  {/* Comportamento */}
-                  <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
-                    <span className="text-[10px] text-slate-400 block font-medium">Conduta</span>
-                    <strong className="text-xs font-black text-indigo-300 block mt-0.5">
-                      {student.behavior_score || 85}/100
-                    </strong>
-                    <span className="text-[9px] text-slate-500 block">Fair Play</span>
-                  </div>
-
-                  {/* Estrelas & Pontos */}
-                  <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
-                    <span className="text-[10px] text-slate-400 block font-medium">Pontos</span>
-                    <strong className="text-xs font-black text-amber-400 block mt-0.5">
-                      {student.total_points} pts
-                    </strong>
-                    <span className="text-[9px] text-slate-500 block">
-                      {student.stars_count} ⭐
-                    </span>
+                  <div className="text-xs font-semibold text-slate-400">
+                    {student.stars_count || Math.floor((student.total_points || 180) / 20)} estrelas
                   </div>
                 </div>
-
-                {/* Nota do Professor */}
-                {student.behavior_notes && (
-                  <p className="text-[11px] text-slate-400 italic bg-slate-900/40 p-2 rounded-lg border border-slate-800/60 mt-2.5 line-clamp-2">
-                    &ldquo;{student.behavior_notes}&rdquo;
-                  </p>
-                )}
               </div>
 
-              {/* Botão de Avaliar / Dar Pontos */}
-              <div className="pt-2 border-t border-slate-800/80">
-                <button
-                  type="button"
-                  onClick={() => handleOpenAwardModal(student)}
-                  className="w-full py-2.5 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95"
-                >
-                  <Plus size={14} /> Atribuir Mérito / Estrela
-                </button>
-              </div>
+              {/* Botão de Ação: + Atribuir Pontos / Estrela */}
+              <button
+                type="button"
+                onClick={() => handleOpenAwardModal(student)}
+                className="w-full py-2.5 px-3 rounded-xl bg-[#0e1627] hover:bg-[#1a233a] hover:border-[#f59e0b]/40 text-[#f59e0b] border border-slate-800 text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <Plus size={14} /> Atribuir Pontos / Estrela
+              </button>
             </div>
           );
         })}
       </div>
 
       {/* ======================================================== */}
-      {/* MODAL: ATRIBUIR PONTOS EM FORMAÇÃO DO ALUNO OU TÉCNICA */}
+      {/* MODAL: ATRIBUIR PONTOS / ESTRELA */}
       {/* ======================================================== */}
       {isAwardModalOpen && awardStudent && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-950 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl max-h-[92vh] flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#0b1120] border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl max-h-[92vh] flex flex-col">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Sparkles className="text-amber-400" size={20} /> Reconhecer Evolução do Aluno
+                <Sparkles className="text-[#f59e0b]" size={20} /> Atribuir Pontos / Estrela
               </h2>
               <button 
                 onClick={() => setIsAwardModalOpen(false)}
@@ -410,103 +290,75 @@ export default function GamificacaoPage() {
               </button>
             </div>
 
-            {/* Identificação do Aluno */}
-            <div className="p-3.5 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between">
+            {/* Identificação do Atleta */}
+            <div className="p-3.5 bg-slate-900/90 rounded-2xl border border-slate-800 flex items-center justify-between">
               <div>
-                <p className="text-[11px] text-slate-400 font-semibold">Aluno(a) em Avaliação</p>
+                <p className="text-[11px] text-slate-400 font-semibold">Atleta Selecionado</p>
                 <p className="font-extrabold text-white text-base">{awardStudent.full_name}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{awardStudent.current_class?.name}</p>
+                <p className="text-xs text-slate-400 mt-0.5">{awardStudent.position || 'Geral'} • {awardStudent.current_class?.name}</p>
               </div>
               <div className="text-right">
-                <span className="text-xs text-emerald-400 font-bold block">
-                  {awardStudent.attendance_rate}% Presença
+                <span className="text-xs text-[#facc15] font-black block">
+                  ★ {awardStudent.total_points || 0} pts
                 </span>
-                <span className="text-xs text-indigo-300 font-bold block">
-                  Conduta: {awardStudent.behavior_score}/100
+                <span className="text-xs text-emerald-400 font-semibold block">
+                  {awardStudent.attendance_rate || 90}% Presença
                 </span>
               </div>
-            </div>
-
-            {/* Subtabs de Seleção: Comportamento/Presença vs Técnica */}
-            <div className="flex border-b border-slate-800 gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedModalTab('comportamento');
-                  setSelectedSkill('presenca_constante');
-                }}
-                className={`flex-1 pb-2 text-xs font-bold border-b-2 transition flex items-center justify-center gap-1.5 ${
-                  selectedModalTab === 'comportamento'
-                    ? 'border-indigo-500 text-indigo-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Heart size={14} /> Presença & Comportamento
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedModalTab('tecnico');
-                  setSelectedSkill('passe_dominio');
-                }}
-                className={`flex-1 pb-2 text-xs font-bold border-b-2 transition flex items-center justify-center gap-1.5 ${
-                  selectedModalTab === 'tecnico'
-                    ? 'border-amber-500 text-amber-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Trophy size={14} /> Fundamentos com Bola
-              </button>
             </div>
 
             <form onSubmit={handleConfirmAward} className="space-y-4 overflow-y-auto flex-1 pr-1">
-              {/* Opções de Habilidade / Mérito */}
-              <div className="space-y-2">
-                {(selectedModalTab === 'comportamento' ? behaviorSkills : technicalSkills).map((skill) => (
-                  <label
-                    key={skill.dimension}
-                    className={`
-                      p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition
-                      ${selectedSkill === skill.dimension 
-                        ? 'bg-amber-500/10 border-amber-500/40 text-white' 
-                        : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800/70'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="skill"
-                        value={skill.dimension}
-                        checked={selectedSkill === skill.dimension}
-                        onChange={() => setSelectedSkill(skill.dimension)}
-                        className="accent-amber-400"
-                      />
-                      <div>
-                        <p className="text-xs font-bold leading-tight flex items-center gap-1.5">
-                          <span>{skill.icon}</span> {skill.label}
-                        </p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">{skill.desc}</p>
+              <div>
+                <label className="text-xs font-bold text-slate-300 block mb-2">
+                  Selecione o Fundamento ou Mérito Avaliado:
+                </label>
+                <div className="space-y-2">
+                  {mockSportsSkills.map((skill) => (
+                    <label
+                      key={skill.dimension}
+                      className={`
+                        p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition
+                        ${selectedSkill === skill.dimension 
+                          ? 'bg-[#2b1c09] border-[#f59e0b]/50 text-white' 
+                          : 'bg-slate-900/70 border-slate-800 text-slate-300 hover:bg-slate-800/60'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="skill"
+                          value={skill.dimension}
+                          checked={selectedSkill === skill.dimension}
+                          onChange={() => setSelectedSkill(skill.dimension)}
+                          className="accent-[#f59e0b]"
+                        />
+                        <div>
+                          <p className="text-xs font-bold leading-tight flex items-center gap-1.5">
+                            <span>{skill.icon}</span> {skill.label}
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-0.5">{skill.desc}</p>
+                        </div>
                       </div>
-                    </div>
-                    <span className="text-xs font-black text-amber-400 whitespace-nowrap pl-2">
-                      +{skill.points} pts
-                    </span>
-                  </label>
-                ))}
+                      <span className="text-xs font-black text-[#facc15] whitespace-nowrap pl-2">
+                        +{skill.points} pts
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
-              {/* Observação / Parecer Positivo para a Família */}
+              {/* Mensagem / Observação do Treinador */}
               <div>
                 <label className="text-xs font-semibold text-slate-300 block mb-1">
-                  Mensagem de Incentivo / Motivo do Mérito:
+                  Nota do Treinador (Opcional):
                 </label>
                 <textarea
                   rows={2}
                   value={customNote}
                   onChange={(e) => setCustomNote(e.target.value)}
-                  placeholder="Ex: Demonstrou muito companheirismo ajudando os colegas a recolher os materiais..."
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                  placeholder="Ex: Excelente posicionamento tático e ótima atitude de equipe no treino..."
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#f59e0b]"
                 />
               </div>
 
@@ -520,9 +372,9 @@ export default function GamificacaoPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5 shadow-lg shadow-amber-500/20"
+                  className="px-5 py-2.5 rounded-xl bg-[#f59e0b] hover:bg-[#d97706] text-slate-950 font-black text-xs transition flex items-center gap-1.5 shadow-lg shadow-amber-500/20 cursor-pointer"
                 >
-                  <CheckCircle size={15} /> Confirmar Mérito (+Estrela)
+                  <CheckCircle size={15} /> Confirmar Pontos & Estrela
                 </button>
               </div>
             </form>
