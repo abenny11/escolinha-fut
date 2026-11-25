@@ -48,6 +48,7 @@ export function Sidebar() {
     { href: '/', label: 'Dashboard & Indicadores', icon: LayoutDashboard, roles: ['admin'] },
     { href: '/alunos', label: 'Alunos & Matrículas', icon: Users, roles: ['admin', 'secretary'] },
     { href: '/turmas', label: 'Agenda & Grade', icon: Trophy, roles: ['admin', 'secretary', 'coach'] },
+    { href: '/torneios', label: 'Torneios & Súmulas', icon: Trophy, roles: ['admin', 'secretary', 'coach', 'guardian_portal'] },
     { href: '/chamada', label: 'Chamada & Frequência', icon: CalendarCheck, roles: ['admin', 'secretary', 'coach'] },
     { href: '/experimentais', label: 'Aulas Experimentais', icon: UserPlus, roles: ['admin', 'secretary', 'coach'] },
     { href: '/uniformes', label: 'Uniformes & Estoque', icon: Shirt, roles: ['admin', 'secretary'] },
