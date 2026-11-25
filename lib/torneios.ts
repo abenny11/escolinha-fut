@@ -671,19 +671,25 @@ export function parseSumulaOcr(rawText: string, nomeTimeA = '', nomeTimeB = ''):
 // Store LocalStorage + Seed Inicial com Alunos da Escolinha
 // ============================================================
 
-const STORAGE_KEY = 'escolinha_fut_torneios_v1';
+const STORAGE_KEY = 'escolinha_fut_torneios_v2';
 
 export function buildSeedStore(): TorneiosStore {
-  const torneioId = 'torn-copa-sub11';
-  const torneio: Torneio = {
-    id: torneioId,
+  const agora = new Date().toISOString();
+  const hoje = agora.slice(0, 10);
+
+  // =========================================================================
+  // 1. CAMPEONATO INFANTIL EM ANDAMENTO (8 equipes: Quartas -> Semi -> Final)
+  // =========================================================================
+  const tAndamentoId = 'torn-copa-sub11';
+  const tAndamento: Torneio = {
+    id: tAndamentoId,
     codigo: 'COPA11',
-    nome: 'Copa Escolinha Sub-11',
+    nome: 'Copa Escolinha Infantil Sub-11',
     modalidade: 'futebol',
     categoria: 'Sub-11',
     formato: 'mata-mata',
-    inicio: new Date().toISOString().slice(0, 10),
-    local: 'Campo Principal',
+    inicio: hoje,
+    local: 'Campo Principal — São Cristóvão',
     valor_inscricao: 0,
     max_times: 8,
     duracao_tempo_min: 20,
@@ -696,137 +702,179 @@ export function buildSeedStore(): TorneiosStore {
       ],
     }),
     regras: formatarRegrasTexto(obterRegrasPadrao('futebol')),
-    criado_em: new Date().toISOString(),
+    criado_em: agora,
   };
 
-  const times: TorneioTime[] = [
-    { id: 'tm-1', torneio_id: torneioId, nome: 'Leões da Base', tecnico: 'Prof. Carlos Eduardo', pago: true, criado_em: new Date().toISOString() },
-    { id: 'tm-2', torneio_id: torneioId, nome: 'Águias FC', tecnico: 'Prof. Marcos Silva', pago: true, criado_em: new Date().toISOString() },
-    { id: 'tm-3', torneio_id: torneioId, nome: 'Furacão Academy', tecnico: 'Prof. Rafael Costa', pago: true, criado_em: new Date().toISOString() },
-    { id: 'tm-4', torneio_id: torneioId, nome: 'Estrela Dalva', tecnico: 'Prof. Lucas Lima', pago: true, criado_em: new Date().toISOString() },
+  const timesAndamento: TorneioTime[] = [
+    { id: 'tm-a1', torneio_id: tAndamentoId, nome: 'Grêmio Base Sub-11', tecnico: 'Prof. Carlos Eduardo', pago: true, criado_em: agora },
+    { id: 'tm-a2', torneio_id: tAndamentoId, nome: 'Tigres do Sul', tecnico: 'Prof. Marcos Silva', pago: true, criado_em: agora },
+    { id: 'tm-a3', torneio_id: tAndamentoId, nome: 'Atlético Concórdia', tecnico: 'Prof. Rafael Costa', pago: true, criado_em: agora },
+    { id: 'tm-a4', torneio_id: tAndamentoId, nome: 'Raio Tricolor', tecnico: 'Prof. Lucas Lima', pago: true, criado_em: agora },
+    { id: 'tm-a5', torneio_id: tAndamentoId, nome: 'Falcões FC', tecnico: 'Prof. Bruno Rocha', pago: true, criado_em: agora },
+    { id: 'tm-a6', torneio_id: tAndamentoId, nome: 'Guerreiros da Bola', tecnico: 'Prof. Tiago Souza', pago: true, criado_em: agora },
+    { id: 'tm-a7', torneio_id: tAndamentoId, nome: 'Vila Nova Sub-11', tecnico: 'Prof. André Alves', pago: true, criado_em: agora },
+    { id: 'tm-a8', torneio_id: tAndamentoId, nome: 'Estrela Dalva', tecnico: 'Prof. Felipe Dias', pago: true, criado_em: agora },
   ];
 
-  const atletas: TorneioAtleta[] = mockStudents.slice(0, 12).map((st, idx) => ({
-    id: `atl-seed-${idx + 1}`,
-    torneio_id: torneioId,
-    time_id: times[idx % times.length].id,
-    student_id: st.id,
-    nome: st.full_name,
-    camisa: (idx % 11) + 1,
-    posicao: st.position || 'Meia',
-    titular: true,
-  }));
+  const atletasAndamento: TorneioAtleta[] = timesAndamento.flatMap((tm, tIdx) => {
+    const baseNames = [
+      mockStudents[tIdx % mockStudents.length]?.full_name || `Lucas ${tIdx + 1}`,
+      mockStudents[(tIdx + 3) % mockStudents.length]?.full_name || `Pedro ${tIdx + 1}`,
+      mockStudents[(tIdx + 6) % mockStudents.length]?.full_name || `Gabriel ${tIdx + 1}`,
+      mockStudents[(tIdx + 9) % mockStudents.length]?.full_name || `Matheus ${tIdx + 1}`,
+    ];
+    return baseNames.map((nome, aIdx) => ({
+      id: `atl-a-${tIdx}-${aIdx}`,
+      torneio_id: tAndamentoId,
+      time_id: tm.id,
+      student_id: mockStudents[(tIdx + aIdx) % mockStudents.length]?.id,
+      nome,
+      camisa: [1, 5, 10, 9][aIdx],
+      posicao: ['Goleiro', 'Zagueiro / Fixo', 'Meia', 'Atacante / Pivô'][aIdx],
+      titular: true,
+    }));
+  });
 
-  const jogos: TorneioJogo[] = [
-    {
-      id: 'jog-semi-1',
-      torneio_id: torneioId,
-      rodada: 1,
-      ordem: 1,
-      time_a: 'tm-1',
-      time_b: 'tm-2',
-      gols_a: 3,
-      gols_b: 1,
-      penaltis_a: null,
-      penaltis_b: null,
-      faltas_a: 2,
-      faltas_b: 4,
-      local: 'Campo 1',
-      status: 'finalizado',
-      ao_vivo_periodo: 2,
-      ao_vivo_segundos_acumulados: 2400,
-      ao_vivo_pausado: true,
-    },
-    {
-      id: 'jog-semi-2',
-      torneio_id: torneioId,
-      rodada: 1,
-      ordem: 2,
-      time_a: 'tm-3',
-      time_b: 'tm-4',
-      gols_a: null,
-      gols_b: null,
-      penaltis_a: null,
-      penaltis_b: null,
-      faltas_a: 0,
-      faltas_b: 0,
-      local: 'Campo 1',
-      status: 'agendado',
-      ao_vivo_periodo: 1,
-      ao_vivo_segundos_acumulados: 0,
-      ao_vivo_pausado: true,
-    },
-    {
-      id: 'jog-final',
-      torneio_id: torneioId,
-      rodada: 2,
-      ordem: 1,
-      time_a: 'tm-1',
-      time_b: null,
-      gols_a: null,
-      gols_b: null,
-      penaltis_a: null,
-      penaltis_b: null,
-      faltas_a: 0,
-      faltas_b: 0,
-      local: 'Campo Principal',
-      status: 'agendado',
-      ao_vivo_periodo: 1,
-      ao_vivo_segundos_acumulados: 0,
-      ao_vivo_pausado: true,
-    },
+  const jogosAndamento: TorneioJogo[] = [
+    // Quartas de Final (finalizadas)
+    { id: 'ja-q1', torneio_id: tAndamentoId, rodada: 1, ordem: 1, time_a: 'tm-a1', time_b: 'tm-a2', gols_a: 3, gols_b: 1, penaltis_a: null, penaltis_b: null, faltas_a: 2, faltas_b: 4, local: 'Campo 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 2400, ao_vivo_pausado: true },
+    { id: 'ja-q2', torneio_id: tAndamentoId, rodada: 1, ordem: 2, time_a: 'tm-a3', time_b: 'tm-a4', gols_a: 2, gols_b: 2, penaltis_a: 4, penaltis_b: 3, faltas_a: 3, faltas_b: 3, local: 'Campo 2', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 2400, ao_vivo_pausado: true },
+    { id: 'ja-q3', torneio_id: tAndamentoId, rodada: 1, ordem: 3, time_a: 'tm-a5', time_b: 'tm-a6', gols_a: 4, gols_b: 0, penaltis_a: null, penaltis_b: null, faltas_a: 1, faltas_b: 5, local: 'Campo 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 2400, ao_vivo_pausado: true },
+    { id: 'ja-q4', torneio_id: tAndamentoId, rodada: 1, ordem: 4, time_a: 'tm-a7', time_b: 'tm-a8', gols_a: 1, gols_b: 2, penaltis_a: null, penaltis_b: null, faltas_a: 4, faltas_b: 2, local: 'Campo 2', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 2400, ao_vivo_pausado: true },
+    // Semifinais (1 ao vivo, 1 agendada)
+    { id: 'ja-s1', torneio_id: tAndamentoId, rodada: 2, ordem: 1, time_a: 'tm-a1', time_b: 'tm-a3', gols_a: 2, gols_b: 1, penaltis_a: null, penaltis_b: null, faltas_a: 3, faltas_b: 2, local: 'Campo Principal', status: 'ao_vivo', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1680, ao_vivo_pausado: true },
+    { id: 'ja-s2', torneio_id: tAndamentoId, rodada: 2, ordem: 2, time_a: 'tm-a5', time_b: 'tm-a8', gols_a: null, gols_b: null, penaltis_a: null, penaltis_b: null, faltas_a: 0, faltas_b: 0, local: 'Campo Principal', status: 'agendado', ao_vivo_periodo: 1, ao_vivo_segundos_acumulados: 0, ao_vivo_pausado: true },
+    // Final (aguardando)
+    { id: 'ja-f1', torneio_id: tAndamentoId, rodada: 3, ordem: 1, time_a: null, time_b: null, gols_a: null, gols_b: null, penaltis_a: null, penaltis_b: null, faltas_a: 0, faltas_b: 0, local: 'Campo Principal', status: 'agendado', ao_vivo_periodo: 1, ao_vivo_segundos_acumulados: 0, ao_vivo_pausado: true },
+  ];
+
+  // =========================================================================
+  // 2. CAMPEONATO INFANTIL JÁ ENCERRADO (8 equipes, chave completa até o campeão)
+  // =========================================================================
+  const tEncerradoId = 'torn-copa-sub9-enc';
+  const tEncerrado: Torneio = {
+    id: tEncerradoId,
+    codigo: 'SUB9ENC',
+    nome: '1ª Copa Grêmio Concórdia Sub-9',
+    modalidade: 'futsal',
+    categoria: 'Sub-9',
+    formato: 'mata-mata',
+    inicio: '2026-10-12',
+    fim: '2026-10-20',
+    local: 'Quadra Coberta — São Cristóvão',
+    valor_inscricao: 0,
+    max_times: 8,
+    duracao_tempo_min: 15,
+    status: 'encerrado',
+    premio: JSON.stringify({
+      posicoes: [
+        { pos: 'Campeão', descricao: 'Troféu + Medalhas de Ouro (Grêmio Tricolor Sub-9)' },
+        { pos: 'Vice-Campeão', descricao: 'Medalhas de Prata (Águias do Oeste)' },
+        { pos: '3º Lugar', descricao: 'Medalhas de Bronze (São Cristóvão FC)' },
+      ],
+    }),
+    regras: formatarRegrasTexto(obterRegrasPadrao('futsal')),
+    criado_em: '2026-10-10T10:00:00.000Z',
+  };
+
+  const timesEncerrado: TorneioTime[] = [
+    { id: 'tm-e1', torneio_id: tEncerradoId, nome: 'Grêmio Tricolor Sub-9', tecnico: 'Prof. Carlos Eduardo', pago: true, criado_em: agora },
+    { id: 'tm-e2', torneio_id: tEncerradoId, nome: 'Leões de Concórdia', tecnico: 'Prof. Marcos Silva', pago: true, criado_em: agora },
+    { id: 'tm-e3', torneio_id: tEncerradoId, nome: 'São Cristóvão FC', tecnico: 'Prof. Rafael Costa', pago: true, criado_em: agora },
+    { id: 'tm-e4', torneio_id: tEncerradoId, nome: 'Furacão da Serra', tecnico: 'Prof. Lucas Lima', pago: true, criado_em: agora },
+    { id: 'tm-e5', torneio_id: tEncerradoId, nome: 'Águias do Oeste', tecnico: 'Prof. Bruno Rocha', pago: true, criado_em: agora },
+    { id: 'tm-e6', torneio_id: tEncerradoId, nome: 'Estrela Azul', tecnico: 'Prof. Tiago Souza', pago: true, criado_em: agora },
+    { id: 'tm-e7', torneio_id: tEncerradoId, nome: 'União Infantil', tecnico: 'Prof. André Alves', pago: true, criado_em: agora },
+    { id: 'tm-e8', torneio_id: tEncerradoId, nome: 'Craques do Futuro', tecnico: 'Prof. Felipe Dias', pago: true, criado_em: agora },
+  ];
+
+  const atletasEncerrado: TorneioAtleta[] = timesEncerrado.flatMap((tm, tIdx) =>
+    ['Enzo', 'Arthur', 'Davi', 'Bernardo'].map((pre, aIdx) => ({
+      id: `atl-e-${tIdx}-${aIdx}`,
+      torneio_id: tEncerradoId,
+      time_id: tm.id,
+      nome: `${pre} ${['Silva', 'Souza', 'Oliveira', 'Santos'][aIdx]}`,
+      camisa: [1, 4, 8, 9][aIdx],
+      posicao: ['Goleiro', 'Zagueiro / Fixo', 'Lateral / Ala', 'Atacante / Pivô'][aIdx],
+      titular: true,
+    })),
+  );
+
+  const jogosEncerrado: TorneioJogo[] = [
+    // Quartas de Final
+    { id: 'je-q1', torneio_id: tEncerradoId, rodada: 1, ordem: 1, time_a: 'tm-e1', time_b: 'tm-e2', gols_a: 4, gols_b: 1, penaltis_a: null, penaltis_b: null, faltas_a: 2, faltas_b: 3, local: 'Quadra 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1800, ao_vivo_pausado: true },
+    { id: 'je-q2', torneio_id: tEncerradoId, rodada: 1, ordem: 2, time_a: 'tm-e3', time_b: 'tm-e4', gols_a: 3, gols_b: 2, penaltis_a: null, penaltis_b: null, faltas_a: 3, faltas_b: 4, local: 'Quadra 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1800, ao_vivo_pausado: true },
+    { id: 'je-q3', torneio_id: tEncerradoId, rodada: 1, ordem: 3, time_a: 'tm-e5', time_b: 'tm-e6', gols_a: 2, gols_b: 0, penaltis_a: null, penaltis_b: null, faltas_a: 1, faltas_b: 2, local: 'Quadra 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1800, ao_vivo_pausado: true },
+    { id: 'je-q4', torneio_id: tEncerradoId, rodada: 1, ordem: 4, time_a: 'tm-e7', time_b: 'tm-e8', gols_a: 1, gols_b: 1, penaltis_a: 2, penaltis_b: 3, faltas_a: 4, faltas_b: 3, local: 'Quadra 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1800, ao_vivo_pausado: true },
+    // Semifinais
+    { id: 'je-s1', torneio_id: tEncerradoId, rodada: 2, ordem: 1, time_a: 'tm-e1', time_b: 'tm-e3', gols_a: 2, gols_b: 1, penaltis_a: null, penaltis_b: null, faltas_a: 2, faltas_b: 3, local: 'Quadra 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1800, ao_vivo_pausado: true },
+    { id: 'je-s2', torneio_id: tEncerradoId, rodada: 2, ordem: 2, time_a: 'tm-e5', time_b: 'tm-e8', gols_a: 3, gols_b: 1, penaltis_a: null, penaltis_b: null, faltas_a: 3, faltas_b: 4, local: 'Quadra 1', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1800, ao_vivo_pausado: true },
+    // Final (Campeão: Grêmio Tricolor Sub-9)
+    { id: 'je-f1', torneio_id: tEncerradoId, rodada: 3, ordem: 1, time_a: 'tm-e1', time_b: 'tm-e5', gols_a: 3, gols_b: 1, penaltis_a: null, penaltis_b: null, faltas_a: 2, faltas_b: 3, local: 'Quadra Principal', status: 'finalizado', ao_vivo_periodo: 2, ao_vivo_segundos_acumulados: 1800, ao_vivo_pausado: true },
   ];
 
   const eventos: TorneioEvento[] = [
-    {
-      id: 'ev-1',
-      torneio_id: torneioId,
-      jogo_id: 'jog-semi-1',
-      time_id: 'tm-1',
-      atleta_id: atletas[0]?.id,
-      atleta_nome: atletas[0]?.nome || 'Atleta 1',
-      tipo: 'gol',
-      minuto: 8,
-      periodo: 1,
-      criado_em: new Date().toISOString(),
-    },
-    {
-      id: 'ev-2',
-      torneio_id: torneioId,
-      jogo_id: 'jog-semi-1',
-      time_id: 'tm-2',
-      atleta_id: atletas[1]?.id,
-      atleta_nome: atletas[1]?.nome || 'Atleta 2',
-      tipo: 'cartao_amarelo',
-      minuto: 14,
-      periodo: 1,
-      observacao: 'Falta tática no meio-campo',
-      criado_em: new Date().toISOString(),
-    },
+    // Eventos do torneio em andamento
+    { id: 'ev-a1', torneio_id: tAndamentoId, jogo_id: 'ja-q1', time_id: 'tm-a1', atleta_id: atletasAndamento[3]?.id, atleta_nome: atletasAndamento[3]?.nome, tipo: 'gol', minuto: 6, periodo: 1, criado_em: agora },
+    { id: 'ev-a2', torneio_id: tAndamentoId, jogo_id: 'ja-q1', time_id: 'tm-a1', atleta_id: atletasAndamento[2]?.id, atleta_nome: atletasAndamento[2]?.nome, tipo: 'gol', minuto: 18, periodo: 1, criado_em: agora },
+    { id: 'ev-a3', torneio_id: tAndamentoId, jogo_id: 'ja-s1', time_id: 'tm-a1', atleta_id: atletasAndamento[3]?.id, atleta_nome: atletasAndamento[3]?.nome, tipo: 'gol', minuto: 11, periodo: 1, criado_em: agora },
+    { id: 'ev-a4', torneio_id: tAndamentoId, jogo_id: 'ja-s1', time_id: 'tm-a3', atleta_id: atletasAndamento[11]?.id, atleta_nome: atletasAndamento[11]?.nome, tipo: 'cartao_amarelo', minuto: 24, periodo: 2, observacao: 'Falta tática', criado_em: agora },
+    // Eventos do torneio encerrado
+    { id: 'ev-e1', torneio_id: tEncerradoId, jogo_id: 'je-f1', time_id: 'tm-e1', atleta_id: atletasEncerrado[3]?.id, atleta_nome: atletasEncerrado[3]?.nome, tipo: 'gol', minuto: 5, periodo: 1, criado_em: agora },
+    { id: 'ev-e2', torneio_id: tEncerradoId, jogo_id: 'je-f1', time_id: 'tm-e1', atleta_id: atletasEncerrado[3]?.id, atleta_nome: atletasEncerrado[3]?.nome, tipo: 'gol', minuto: 14, periodo: 1, criado_em: agora },
+    { id: 'ev-e3', torneio_id: tEncerradoId, jogo_id: 'je-f1', time_id: 'tm-e5', atleta_id: atletasEncerrado[19]?.id, atleta_nome: atletasEncerrado[19]?.nome, tipo: 'gol', minuto: 21, periodo: 2, criado_em: agora },
+    { id: 'ev-e4', torneio_id: tEncerradoId, jogo_id: 'je-f1', time_id: 'tm-e1', atleta_id: atletasEncerrado[2]?.id, atleta_nome: atletasEncerrado[2]?.nome, tipo: 'gol', minuto: 28, periodo: 2, criado_em: agora },
+    { id: 'ev-e5', torneio_id: tEncerradoId, jogo_id: 'je-s1', time_id: 'tm-e3', atleta_id: atletasEncerrado[11]?.id, atleta_nome: atletasEncerrado[11]?.nome, tipo: 'cartao_amarelo', minuto: 19, periodo: 2, observacao: 'Reclamação', criado_em: agora },
   ];
 
   const sumulas: TorneioSumula[] = [
     {
-      id: 'sum-1',
-      torneio_id: torneioId,
-      jogo_id: 'jog-semi-1',
+      id: 'sum-a1',
+      torneio_id: tAndamentoId,
+      jogo_id: 'ja-q1',
       arbitro: 'Árbitro Ricardo Mendes',
       local: 'Campo 1',
-      data_realizacao: new Date().toISOString().slice(0, 10),
+      data_realizacao: hoje,
       hora_inicio: '09:00',
       hora_termino: '09:45',
-      escalacao_a: atletas.filter((a) => a.time_id === 'tm-1').map((a) => ({ atleta_id: a.id, nome: a.nome, camisa: a.camisa, posicao: a.posicao, titular: a.titular })),
-      escalacao_b: atletas.filter((a) => a.time_id === 'tm-2').map((a) => ({ atleta_id: a.id, nome: a.nome, camisa: a.camisa, posicao: a.posicao, titular: a.titular })),
-      ocorrencias: 'Partida disputada com fair play e ótima presença dos pais.',
+      escalacao_a: atletasAndamento.filter((a) => a.time_id === 'tm-a1').map((a) => ({ atleta_id: a.id, nome: a.nome, camisa: a.camisa, posicao: a.posicao, titular: a.titular })),
+      escalacao_b: atletasAndamento.filter((a) => a.time_id === 'tm-a2').map((a) => ({ atleta_id: a.id, nome: a.nome, camisa: a.camisa, posicao: a.posicao, titular: a.titular })),
+      ocorrencias: 'Partida disputada com fair play e ótima presença das famílias.',
       assinatura_arbitro: 'Ricardo Mendes',
       assinatura_tecnico_a: 'Prof. Carlos Eduardo',
       assinatura_tecnico_b: 'Prof. Marcos Silva',
       status: 'finalizada',
-      finalizada_em: new Date().toISOString(),
+      finalizada_em: agora,
+    },
+    {
+      id: 'sum-e-final',
+      torneio_id: tEncerradoId,
+      jogo_id: 'je-f1',
+      arbitro: 'Árbitro Rodrigo Ferreira',
+      mesario: 'Ana Paula',
+      local: 'Quadra Principal',
+      data_realizacao: '2026-10-20',
+      hora_inicio: '16:00',
+      hora_termino: '16:40',
+      escalacao_a: atletasEncerrado.filter((a) => a.time_id === 'tm-e1').map((a) => ({ atleta_id: a.id, nome: a.nome, camisa: a.camisa, posicao: a.posicao, titular: a.titular })),
+      escalacao_b: atletasEncerrado.filter((a) => a.time_id === 'tm-e5').map((a) => ({ atleta_id: a.id, nome: a.nome, camisa: a.camisa, posicao: a.posicao, titular: a.titular })),
+      ocorrencias: 'Grande final da 1ª Copa Sub-9. Entrega de troféus e medalhas após o apito final.',
+      assinatura_arbitro: 'Rodrigo Ferreira',
+      assinatura_tecnico_a: 'Prof. Carlos Eduardo',
+      assinatura_tecnico_b: 'Prof. Bruno Rocha',
+      status: 'finalizada',
+      finalizada_em: '2026-10-20T16:45:00.000Z',
     },
   ];
 
-  return { torneios: [torneio], times, atletas, jogos, sumulas, eventos };
+  return {
+    torneios: [tAndamento, tEncerrado],
+    times: [...timesAndamento, ...timesEncerrado],
+    atletas: [...atletasAndamento, ...atletasEncerrado],
+    jogos: [...jogosAndamento, ...jogosEncerrado],
+    sumulas,
+    eventos,
+  };
 }
 
 export function loadTorneiosStore(): TorneiosStore {
