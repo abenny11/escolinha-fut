@@ -16,10 +16,14 @@ import {
   UserPlus,
   Shirt,
   MessageSquare,
-  Award
+  Award,
+  Sun,
+  Moon,
+  Palette
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAppRole } from '@/contexts/RoleContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { AppRole } from '@/lib/types';
 
 export function Sidebar() {
@@ -27,6 +31,7 @@ export function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const { currentRole, setRole, roleLabels } = useAppRole();
+  const { theme, toggleMode } = useTheme();
   const [customLogo, setCustomLogo] = useState('');
   const [customSchoolName, setCustomSchoolName] = useState('Sportdesk');
 
@@ -189,8 +194,34 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Rodapé com Informações da Categoria / Usuário */}
-        <div className="p-3 border-t border-slate-800/60 bg-slate-950/90">
+        {/* Rodapé com Controle de Tema e Sessão */}
+        <div className="p-3 border-t border-slate-800/60 bg-slate-950/90 space-y-2">
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/60 px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-emerald-500/50 transition"
+              title="Alternar tema claro e escuro"
+            >
+              {theme.mode === 'dark' ? (
+                <>
+                  <Sun size={14} className="text-amber-400" /> Tema Claro
+                </>
+              ) : (
+                <>
+                  <Moon size={14} className="text-indigo-400" /> Tema Escuro
+                </>
+              )}
+            </button>
+            <Link
+              href="/configuracoes#aparencia"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 p-2 text-slate-300 hover:border-emerald-500/50 transition"
+              title="Personalizar cores do tema e texto"
+            >
+              <Palette size={14} />
+            </Link>
+          </div>
           <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/60 border border-slate-800/60">
             <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/30">
               {roleLabels[currentRole].icon}

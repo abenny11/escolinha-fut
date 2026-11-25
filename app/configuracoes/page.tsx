@@ -17,11 +17,17 @@ import {
   User,
   Shield,
   FileCheck,
-  AlertCircle
+  AlertCircle,
+  Palette,
+  Sun,
+  Moon,
+  RotateCcw
 } from 'lucide-react';
 import { mockModalities, mockPlans } from '@/lib/mock-data';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ConfiguracoesPage() {
+  const { theme, setTheme, resetTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [modalities, setModalities] = useState(mockModalities);
   const [plans] = useState(mockPlans);
@@ -204,6 +210,120 @@ export default function ConfiguracoesPage() {
           </div>
         </div>
       )}
+
+      {/* Controle de Tema Claro/Escuro e Cores Personalizadas */}
+      <div id="aparencia" className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 space-y-5 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <Palette className="text-emerald-400" size={20} />
+            <div>
+              <h2 className="text-base font-bold text-white">Aparência, Tema e Cores</h2>
+              <p className="text-xs text-slate-400">Personalize tema claro/escuro, cores do sistema e cores principais e secundárias de texto.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => resetTheme()}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white"
+          >
+            <RotateCcw size={13} /> Restaurar Padrão
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Modo Claro / Escuro + Paletas */}
+          <div className="space-y-3">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Modo do Tema</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setTheme((prev) => ({
+                  ...prev,
+                  mode: 'dark',
+                  textPrimary: '#f1f5f9',
+                  textSecondary: '#94a3b8',
+                }))}
+                className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-xs font-bold transition ${
+                  theme.mode === 'dark'
+                    ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
+                    : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white'
+                }`}
+              >
+                <Moon size={16} /> Tema Escuro
+              </button>
+              <button
+                type="button"
+                onClick={() => setTheme((prev) => ({
+                  ...prev,
+                  mode: 'light',
+                  textPrimary: '#0f172a',
+                  textSecondary: '#475569',
+                }))}
+                className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-xs font-bold transition ${
+                  theme.mode === 'light'
+                    ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
+                    : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white'
+                }`}
+              >
+                <Sun size={16} /> Tema Claro
+              </button>
+            </div>
+
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block pt-2">Paletas Rápidas</label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { nome: 'Esmeralda', primary: '#10b981', secondary: '#14b8a6' },
+                { nome: 'Azul Royal', primary: '#3b82f6', secondary: '#2563eb' },
+                { nome: 'Rubro', primary: '#ef4444', secondary: '#dc2626' },
+                { nome: 'Ouro', primary: '#f59e0b', secondary: '#d97706' },
+                { nome: 'Roxo', primary: '#8b5cf6', secondary: '#7c3aed' },
+              ].map((pal) => (
+                <button
+                  key={pal.nome}
+                  type="button"
+                  onClick={() => setTheme((prev) => ({ ...prev, primaryColor: pal.primary, secondaryColor: pal.secondary }))}
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-1.5 text-xs font-semibold text-slate-200 hover:border-slate-600"
+                >
+                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: pal.primary }} />
+                  {pal.nome}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cores do Tema e Cores de Texto */}
+          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { key: 'primaryColor' as const, label: 'Cor Principal do Tema', desc: 'Botões, destaques e menu ativo' },
+              { key: 'secondaryColor' as const, label: 'Cor Secundária do Tema', desc: 'Acentos, badges e botões secundários' },
+              { key: 'textPrimary' as const, label: 'Cor Principal de Texto', desc: 'Títulos e textos principais' },
+              { key: 'textSecondary' as const, label: 'Cor Secundária de Texto', desc: 'Subtítulos, rótulos e descrições' },
+            ].map((item) => (
+              <div key={item.key} className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-white">{item.label}</p>
+                  <p className="text-[11px] text-slate-400 truncate">{item.desc}</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <input
+                    type="color"
+                    value={theme[item.key]}
+                    onChange={(e) => setTheme((prev) => ({ ...prev, [item.key]: e.target.value }))}
+                    className="h-9 w-10 cursor-pointer rounded-lg border border-slate-700 bg-transparent p-0.5"
+                    aria-label={item.label}
+                  />
+                  <input
+                    type="text"
+                    value={theme[item.key]}
+                    onChange={(e) => setTheme((prev) => ({ ...prev, [item.key]: e.target.value }))}
+                    className="w-20 rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-xs text-white"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Grid Principal */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
