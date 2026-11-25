@@ -2,14 +2,27 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppShell } from '@/components/AppShell';
+import { CookieBanner } from '@/components/CookieBanner';
+import { AnalyticsScript } from '@/components/AnalyticsScript';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Escolinha Pro — Gestão Esportiva & Performance',
-  description: 'Sistema completo para escolinhas de futebol e modalidades esportivas.',
+  metadataBase: new URL('https://escolinha-fut.vercel.app'),
+  title: {
+    default: 'Escola de Futebol Grêmio Concórdia — Gestão, Torneios & Súmulas',
+    template: '%s | Grêmio Concórdia',
+  },
+  description:
+    'Sistema completo da Escola de Futebol Grêmio Concórdia (Unidade Conveniada Grêmio FBPA em Concórdia-SC): gestão de alunos, torneios, marcação ao vivo e súmula oficial.',
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    url: 'https://escolinha-fut.vercel.app',
+    siteName: 'Escola de Futebol Grêmio Concórdia',
+  },
 };
 
 export default function RootLayout({
@@ -23,6 +36,8 @@ export default function RootLayout({
         <ThemeProvider>
           <RoleProvider>
             <AppShell>{children}</AppShell>
+            <CookieBanner />
+            <AnalyticsScript />
           </RoleProvider>
         </ThemeProvider>
       </body>

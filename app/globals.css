@@ -5,96 +5,85 @@
   --theme-surface: #020617;
   --theme-surface-2: #1e293b;
   --theme-border: #1e293b;
-  --theme-primary: #10b981;
-  --theme-secondary: #14b8a6;
+  --theme-primary: #009fe3;
+  --theme-secondary: #005f8f;
   --theme-text-primary: #f1f5f9;
   --theme-text-secondary: #94a3b8;
 }
 
-body {
+body:has(.app-themed) {
   background-color: var(--theme-bg) !important;
   color: var(--theme-text-primary) !important;
-  font-family: Arial, Helvetica, sans-serif;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Mapeamento dinâmico completo (incluindo opacidades /30, /40, /50, /60, /70, /80, /90) */
-.bg-slate-900 {
+/* Mapeamento dinâmico APENAS dentro do painel (.app-themed) para nunca quebrar a Landing Page */
+.app-themed .bg-slate-900 {
   background-color: var(--theme-bg) !important;
 }
 
-[class*="bg-slate-950"] {
+.app-themed [class*="bg-slate-950"] {
   background-color: var(--theme-surface) !important;
 }
 
-[class*="bg-slate-900\/"] {
+.app-themed [class*="bg-slate-900\/"],
+.app-themed [class*="bg-slate-800"] {
   background-color: var(--theme-surface-2) !important;
 }
 
-[class*="bg-slate-800"] {
-  background-color: var(--theme-surface-2) !important;
-}
-
-[class*="border-slate-800"],
-[class*="border-slate-700"] {
+.app-themed [class*="border-slate-800"],
+.app-themed [class*="border-slate-700"] {
   border-color: var(--theme-border) !important;
 }
 
-.text-white,
-.text-slate-100,
-.text-slate-200 {
+.app-themed .text-white,
+.app-themed .text-slate-100,
+.app-themed .text-slate-200 {
   color: var(--theme-text-primary) !important;
 }
 
-.text-slate-300,
-.text-slate-400,
-.text-slate-500 {
+.app-themed .text-slate-300,
+.app-themed .text-slate-400,
+.app-themed .text-slate-500 {
   color: var(--theme-text-secondary) !important;
 }
 
-/* Cores Principais e Secundárias do Tema */
-.bg-emerald-500 {
+.app-themed .bg-emerald-500 {
   background-color: var(--theme-primary) !important;
 }
-.bg-emerald-600 {
+.app-themed .bg-emerald-600 {
   background-color: var(--theme-secondary) !important;
 }
-.text-emerald-400,
-.text-emerald-500 {
+.app-themed .text-emerald-400,
+.app-themed .text-emerald-500 {
   color: var(--theme-primary) !important;
 }
-.text-teal-400 {
+.app-themed .text-teal-400 {
   color: var(--theme-secondary) !important;
 }
-[class*="border-emerald-500"] {
+.app-themed [class*="border-emerald-500"] {
   border-color: var(--theme-primary) !important;
 }
-[class*="bg-emerald-500\/"],
-[class*="bg-emerald-600\/"] {
+.app-themed [class*="bg-emerald-500\/"],
+.app-themed [class*="bg-emerald-600\/"] {
   background-color: color-mix(in srgb, var(--theme-primary) 14%, transparent) !important;
 }
 
-/* Garante contraste legível em botões primários */
-.bg-emerald-500.text-slate-950,
-.bg-emerald-500 .text-slate-950 {
-  color: #020617 !important;
+.app-themed .bg-emerald-500.text-slate-950,
+.app-themed .bg-emerald-500 .text-slate-950 {
+  color: #ffffff !important;
 }
-.bg-emerald-600.text-white {
+.app-themed .bg-emerald-600.text-white {
   color: #ffffff !important;
 }
 
-/* Ajustes específicos para o Tema Claro */
-html[data-theme="light"] [class*="bg-slate-950"] {
+html[data-theme="light"] .app-themed [class*="bg-slate-950"] {
   box-shadow: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
 }
-html[data-theme="light"] input,
-html[data-theme="light"] select,
-html[data-theme="light"] textarea {
+html[data-theme="light"] .app-themed input,
+html[data-theme="light"] .app-themed select,
+html[data-theme="light"] .app-themed textarea {
   background-color: #ffffff !important;
   color: var(--theme-text-primary) !important;
   border-color: var(--theme-border) !important;
-}
-html[data-theme="light"] .hover\:bg-slate-800:hover,
-html[data-theme="light"] .hover\:bg-slate-900:hover {
-  background-color: var(--theme-surface-2) !important;
 }

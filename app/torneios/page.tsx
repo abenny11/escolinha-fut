@@ -21,6 +21,7 @@ import {
   X,
 } from 'lucide-react';
 import { mockStudents } from '@/lib/mock-data';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   avancarChaveMataMata,
   calcularArtilharia,
@@ -66,6 +67,7 @@ const STATUS_LABEL: Record<string, string> = {
 export default function TorneiosPage() {
   const [store, setStore] = useState<TorneiosStore | null>(null);
   const [busca, setBusca] = useState('');
+  const buscaDebounced = useDebounce(busca, 200);
   const [abertoId, setAbertoId] = useState<string | null>(null);
   const [formTorneio, setFormTorneio] = useState<Partial<Torneio> | null>(null);
   const [toastMsg, setToastMsg] = useState('');
@@ -90,7 +92,7 @@ export default function TorneiosPage() {
 
   const filtrados = useMemo(() => {
     if (!store) return [];
-    const q = busca.trim().toLowerCase();
+    const q = buscaDebounced.trim().toLowerCase();
     if (!q) return store.torneios;
     return store.torneios.filter(
       (t) =>
@@ -98,7 +100,7 @@ export default function TorneiosPage() {
         t.codigo.toLowerCase().includes(q) ||
         (t.categoria || '').toLowerCase().includes(q),
     );
-  }, [store, busca]);
+  }, [store, buscaDebounced]);
 
   if (!store) {
     return <div className="p-8 text-sm text-slate-400">Carregando gestão de torneios...</div>;
