@@ -12,6 +12,65 @@ export type TipoEvento =
   | 'substituicao'
   | 'ocorrencia';
 
+export type ZerarCartoesQuando = 'nunca' | 'grupos' | 'semifinal' | 'final';
+export type CriterioDesempate =
+  | 'pontos'
+  | 'vitorias'
+  | 'saldo'
+  | 'gols_pro'
+  | 'confronto_direto'
+  | 'menos_vermelhos'
+  | 'menos_amarelos';
+
+export interface TorneioConfig {
+  amarelos_suspensao: number;
+  vermelho_jogos_suspensao: number;
+  segundo_amarelo_suspende: boolean;
+  zerar_cartoes: ZerarCartoesQuando;
+  ida_e_volta: boolean;
+  gol_fora_desempate: boolean;
+  pontos_vitoria: number;
+  pontos_empate: number;
+  criterios_desempate: CriterioDesempate[];
+  limite_faltas_tempo: number;
+  max_substituicoes: number;
+  tolerancia_wo_min: number;
+  placar_wo: string;
+}
+
+export const DEFAULT_TORNEIO_CONFIG: TorneioConfig = {
+  amarelos_suspensao: 2,
+  vermelho_jogos_suspensao: 1,
+  segundo_amarelo_suspende: true,
+  zerar_cartoes: 'semifinal',
+  ida_e_volta: false,
+  gol_fora_desempate: false,
+  pontos_vitoria: 3,
+  pontos_empate: 1,
+  criterios_desempate: ['pontos', 'vitorias', 'saldo', 'gols_pro', 'confronto_direto', 'menos_vermelhos', 'menos_amarelos'],
+  limite_faltas_tempo: 0,
+  max_substituicoes: 0,
+  tolerancia_wo_min: 10,
+  placar_wo: '3 x 0',
+};
+
+export const CRITERIOS_LABEL: Record<CriterioDesempate, string> = {
+  pontos: 'Pontos',
+  vitorias: 'Vitórias',
+  saldo: 'Saldo de Gols',
+  gols_pro: 'Gols Pró',
+  confronto_direto: 'Confronto Direto',
+  menos_vermelhos: 'Menor nº Vermelhos',
+  menos_amarelos: 'Menor nº Amarelos',
+};
+
+export const ZERAR_CARTOES_LABEL: Record<ZerarCartoesQuando, string> = {
+  nunca: 'Não zera (acumula até o fim)',
+  grupos: 'Zera após a 1ª fase / grupos',
+  semifinal: 'Zera antes das Semifinais',
+  final: 'Zera antes da Final',
+};
+
 export interface Torneio {
   id: string;
   codigo: string;
@@ -29,6 +88,7 @@ export interface Torneio {
   status: StatusTorneio;
   premio?: string;
   regras?: string;
+  config?: TorneioConfig;
   criado_em: string;
 }
 
@@ -161,6 +221,8 @@ export interface DisciplinaLinha {
   vermelhos: number;
   faltas: number;
   suspenso: boolean;
+  jogos_suspensao: number;
+  motivo_suspensao?: string;
 }
 
 // ============================================================
@@ -398,16 +460,17 @@ export function gerarJogosTorneio(torneio: Torneio, times: TorneioTime[]): Torne
     return avancarChaveMataMata(torneio, jogos);
   }
 
-  // Todos contra todos (método do círculo)
+  // Todos contra todos (método do círculo) — suporta Turno Único ou Ida e Volta (Dentro e Fora de Casa)
   const lista: (string | null)[] = [...ids];
   if (n % 2 === 1) lista.push(null);
   const k = lista.length;
+  const turnoJogos: TorneioJogo[] = [];
   for (let r = 1; r <= k - 1; r++) {
     for (let i = 0; i < k / 2; i++) {
       const a = lista[i];
       const b = lista[k - 1 - i];
       if (a && b) {
-        jogos.push({
+        turnoJogos.push({
           id: mkId(),
           torneio_id: torneio.id,
           rodada: r,
@@ -428,14 +491,24 @@ export function gerarJogosTorneio(torneio: Torneio, times: TorneioTime[]): Torne
         });
       }
     }
-    // gira mantendo o primeiro fixo
     const last = lista[k - 1];
     for (let idx = k - 1; idx >= 2; idx--) {
       lista[idx] = lista[idx - 1];
     }
     lista[1] = last;
   }
-  return jogos;
+
+  if (torneio.config?.ida_e_volta) {
+    const returno = turnoJogos.map((j) => ({
+      ...j,
+      id: mkId(),
+      rodada: j.rodada + (k - 1),
+      time_a: j.time_b,
+      time_b: j.time_a,
+    }));
+    return [...turnoJogos, ...returno];
+  }
+  return turnoJogos;
 }
 
 export function avancarChaveMataMata(torneio: Torneio, jogos: TorneioJogo[]): TorneioJogo[] {
@@ -465,8 +538,16 @@ export function avancarChaveMataMata(torneio: Torneio, jogos: TorneioJogo[]): To
 // Classificação, Artilharia e Disciplina
 // ============================================================
 
-export function calcularTabela(times: TorneioTime[], jogos: TorneioJogo[]): TabelaLinha[] {
+export function calcularTabela(
+  times: TorneioTime[],
+  jogos: TorneioJogo[],
+  config?: TorneioConfig,
+  eventos: TorneioEvento[] = [],
+): TabelaLinha[] {
+  const cfg = { ...DEFAULT_TORNEIO_CONFIG, ...config };
   const map = new Map<string, TabelaLinha>();
+  const cartoesTime = new Map<string, { amarelos: number; vermelhos: number }>();
+
   for (const t of times) {
     map.set(t.id, {
       id: t.id,
@@ -480,7 +561,17 @@ export function calcularTabela(times: TorneioTime[], jogos: TorneioJogo[]): Tabe
       saldo: 0,
       pontos: 0,
     });
+    cartoesTime.set(t.id, { amarelos: 0, vermelhos: 0 });
   }
+
+  for (const ev of eventos) {
+    if (!ev.time_id) continue;
+    const ct = cartoesTime.get(ev.time_id);
+    if (!ct) continue;
+    if (ev.tipo === 'cartao_amarelo') ct.amarelos += 1;
+    if (ev.tipo === 'cartao_vermelho') ct.vermelhos += 1;
+  }
+
   for (const j of jogos) {
     if (!j.time_a || !j.time_b || j.gols_a == null || j.gols_b == null) continue;
     const a = map.get(j.time_a);
@@ -494,29 +585,55 @@ export function calcularTabela(times: TorneioTime[], jogos: TorneioJogo[]): Tabe
     b.gols_contra += j.gols_a;
     if (j.gols_a > j.gols_b) {
       a.vitorias += 1;
-      a.pontos += 3;
+      a.pontos += cfg.pontos_vitoria;
       b.derrotas += 1;
     } else if (j.gols_b > j.gols_a) {
       b.vitorias += 1;
-      b.pontos += 3;
+      b.pontos += cfg.pontos_vitoria;
       a.derrotas += 1;
     } else {
       a.empates += 1;
       b.empates += 1;
-      a.pontos += 1;
-      b.pontos += 1;
+      a.pontos += cfg.pontos_empate;
+      b.pontos += cfg.pontos_empate;
     }
   }
+
+  const confrontoDireto = (idA: string, idB: string) => {
+    let ptsA = 0;
+    let ptsB = 0;
+    for (const j of jogos) {
+      if (j.gols_a == null || j.gols_b == null) continue;
+      if (j.time_a === idA && j.time_b === idB) {
+        if (j.gols_a > j.gols_b) ptsA += 3;
+        else if (j.gols_b > j.gols_a) ptsB += 3;
+      } else if (j.time_a === idB && j.time_b === idA) {
+        if (j.gols_b > j.gols_a) ptsA += 3;
+        else if (j.gols_a > j.gols_b) ptsB += 3;
+      }
+    }
+    return ptsB - ptsA;
+  };
+
   return Array.from(map.values())
     .map((l) => ({ ...l, saldo: l.gols_pro - l.gols_contra }))
-    .sort(
-      (x, y) =>
-        y.pontos - x.pontos ||
-        y.vitorias - x.vitorias ||
-        y.saldo - x.saldo ||
-        y.gols_pro - x.gols_pro ||
-        x.nome.localeCompare(y.nome),
-    );
+    .sort((x, y) => {
+      for (const crit of cfg.criterios_desempate) {
+        let diff = 0;
+        if (crit === 'pontos') diff = y.pontos - x.pontos;
+        else if (crit === 'vitorias') diff = y.vitorias - x.vitorias;
+        else if (crit === 'saldo') diff = y.saldo - x.saldo;
+        else if (crit === 'gols_pro') diff = y.gols_pro - x.gols_pro;
+        else if (crit === 'confronto_direto') diff = confrontoDireto(x.id, y.id);
+        else if (crit === 'menos_vermelhos') {
+          diff = (cartoesTime.get(x.id)?.vermelhos ?? 0) - (cartoesTime.get(y.id)?.vermelhos ?? 0);
+        } else if (crit === 'menos_amarelos') {
+          diff = (cartoesTime.get(x.id)?.amarelos ?? 0) - (cartoesTime.get(y.id)?.amarelos ?? 0);
+        }
+        if (diff !== 0) return diff;
+      }
+      return x.nome.localeCompare(y.nome);
+    });
 }
 
 export function calcularArtilharia(eventos: TorneioEvento[], times: TorneioTime[]): ArtilheiroLinha[] {
@@ -549,7 +666,12 @@ export function calcularArtilharia(eventos: TorneioEvento[], times: TorneioTime[
     .sort((a, b) => b.gols - a.gols || b.assistencias - a.assistencias || a.nome.localeCompare(b.nome));
 }
 
-export function calcularDisciplina(eventos: TorneioEvento[], times: TorneioTime[]): DisciplinaLinha[] {
+export function calcularDisciplina(
+  eventos: TorneioEvento[],
+  times: TorneioTime[],
+  config?: TorneioConfig,
+): DisciplinaLinha[] {
+  const cfg = { ...DEFAULT_TORNEIO_CONFIG, ...config };
   const timeMap = new Map(times.map((t) => [t.id, t.nome]));
   const map = new Map<string, DisciplinaLinha>();
   for (const e of eventos) {
@@ -566,13 +688,27 @@ export function calcularDisciplina(eventos: TorneioEvento[], times: TorneioTime[
         vermelhos: 0,
         faltas: 0,
         suspenso: false,
+        jogos_suspensao: 0,
       });
     }
     const item = map.get(chave)!;
     if (e.tipo === 'cartao_amarelo') item.amarelos += 1;
     if (e.tipo === 'cartao_vermelho') item.vermelhos += 1;
     if (e.tipo === 'falta') item.faltas += 1;
-    item.suspenso = item.vermelhos > 0 || item.amarelos >= 2;
+
+    const suspPorAmarelo = cfg.amarelos_suspensao > 0 && item.amarelos >= cfg.amarelos_suspensao;
+    const suspPorVermelho = item.vermelhos > 0;
+    item.suspenso = suspPorVermelho || suspPorAmarelo;
+    item.jogos_suspensao =
+      (suspPorVermelho ? item.vermelhos * cfg.vermelho_jogos_suspensao : 0) +
+      (suspPorAmarelo ? Math.floor(item.amarelos / cfg.amarelos_suspensao) : 0);
+    if (suspPorVermelho && suspPorAmarelo) {
+      item.motivo_suspensao = `Vermelho + ${item.amarelos} amarelos`;
+    } else if (suspPorVermelho) {
+      item.motivo_suspensao = `Cartão vermelho (${cfg.vermelho_jogos_suspensao} jogo(s))`;
+    } else if (suspPorAmarelo) {
+      item.motivo_suspensao = `Acumulou ${cfg.amarelos_suspensao} amarelos`;
+    }
   }
   return Array.from(map.values()).sort(
     (a, b) => b.vermelhos - a.vermelhos || b.amarelos - a.amarelos || b.faltas - a.faltas,

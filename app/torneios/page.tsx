@@ -27,6 +27,8 @@ import {
   calcularDisciplina,
   calcularTabela,
   CATEGORIAS_ESCOLINHA,
+  CRITERIOS_LABEL,
+  DEFAULT_TORNEIO_CONFIG,
   formatarRegrasTexto,
   gerarJogosTorneio,
   loadTorneiosStore,
@@ -37,15 +39,19 @@ import {
   parseRegras,
   POSICOES_ATLETA,
   saveTorneiosStore,
+  ZERAR_CARTOES_LABEL,
+  type CriterioDesempate,
   type ItemPremio,
   type ItemRegra,
   type Torneio,
   type TorneioAtleta,
+  type TorneioConfig,
   type TorneioEvento,
   type TorneioJogo,
   type TorneiosStore,
   type TorneioSumula,
   type TorneioTime,
+  type ZerarCartoesQuando,
 } from '@/lib/torneios';
 import { TorneioJogos, TorneioTabela } from '@/components/torneios/TorneioChaveamento';
 import { PartidaAoVivoModal } from '@/components/torneios/PartidaAoVivoModal';
@@ -294,8 +300,24 @@ function FormTorneioModal({
     const r = parseRegras(inicial.regras);
     return r.length ? r : obterRegrasPadrao(inicial.modalidade || 'futebol');
   });
+  const [cfg, setCfg] = useState<TorneioConfig>(() => ({
+    ...DEFAULT_TORNEIO_CONFIG,
+    ...inicial.config,
+  }));
 
   const inputCls = 'w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none';
+
+  function toggleCriterio(c: CriterioDesempate) {
+    setCfg((prev) => {
+      const exists = prev.criterios_desempate.includes(c);
+      return {
+        ...prev,
+        criterios_desempate: exists
+          ? prev.criterios_desempate.filter((x) => x !== c)
+          : [...prev.criterios_desempate, c],
+      };
+    });
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -317,6 +339,7 @@ function FormTorneioModal({
       status: status as Torneio['status'],
       premio: JSON.stringify({ posicoes: premios.filter((p) => p.pos.trim() && p.descricao.trim()) }),
       regras: formatarRegrasTexto(regras) || undefined,
+      config: cfg,
       criado_em: inicial.criado_em || new Date().toISOString(),
     });
   }
@@ -406,6 +429,140 @@ function FormTorneioModal({
               <div>
                 <label className="text-xs text-slate-400 block mb-1">Inscrição R$</label>
                 <input type="number" min={0} step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} className={inputCls} />
+              </div>
+            </div>
+          </div>
+
+          {/* Configurações Técnicas, Disciplina & Desempate */}
+          <div className="space-y-3 rounded-xl border border-slate-800 p-3">
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">
+              Configurações Técnicas, Disciplina &amp; Desempate
+            </span>
+            <div className="grid sm:grid-cols-3 gap-2">
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Amarelos p/ suspensão (0 = não)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  value={cfg.amarelos_suspensao}
+                  onChange={(e) => setCfg((p) => ({ ...p, amarelos_suspensao: Math.max(0, Number(e.target.value)) }))}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Jogos suspensão (Vermelho)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={cfg.vermelho_jogos_suspensao}
+                  onChange={(e) => setCfg((p) => ({ ...p, vermelho_jogos_suspensao: Math.max(1, Number(e.target.value)) }))}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Quando zera cartões?</label>
+                <select
+                  value={cfg.zerar_cartoes}
+                  onChange={(e) => setCfg((p) => ({ ...p, zerar_cartoes: e.target.value as ZerarCartoesQuando }))}
+                  className={inputCls}
+                >
+                  {(Object.keys(ZERAR_CARTOES_LABEL) as ZerarCartoesQuando[]).map((k) => (
+                    <option key={k} value={k}>{ZERAR_CARTOES_LABEL[k]}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-4 gap-2">
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Pts Vitória</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={5}
+                  value={cfg.pontos_vitoria}
+                  onChange={(e) => setCfg((p) => ({ ...p, pontos_vitoria: Number(e.target.value) || 3 }))}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Pts Empate</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={3}
+                  value={cfg.pontos_empate}
+                  onChange={(e) => setCfg((p) => ({ ...p, pontos_empate: Number(e.target.value) || 1 }))}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Faltas/tempo (0 = livre)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={15}
+                  value={cfg.limite_faltas_tempo}
+                  onChange={(e) => setCfg((p) => ({ ...p, limite_faltas_tempo: Math.max(0, Number(e.target.value)) }))}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Tolerância W.O. (min)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={60}
+                  value={cfg.tolerancia_wo_min}
+                  onChange={(e) => setCfg((p) => ({ ...p, tolerancia_wo_min: Math.max(0, Number(e.target.value)) }))}
+                  className={inputCls}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4 text-xs text-slate-300 pt-1">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={cfg.ida_e_volta}
+                  onChange={(e) => setCfg((p) => ({ ...p, ida_e_volta: e.target.checked }))}
+                  className="accent-emerald-500"
+                />
+                Jogos Dentro e Fora de Casa (Turno e Returno / Ida e Volta)
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={cfg.gol_fora_desempate}
+                  onChange={(e) => setCfg((p) => ({ ...p, gol_fora_desempate: e.target.checked }))}
+                  className="accent-emerald-500"
+                />
+                Gol fora de casa como critério
+              </label>
+            </div>
+
+            <div>
+              <label className="text-[11px] text-slate-400 block mb-1.5">Critérios de Desempate Ativos (ordem de prioridade)</label>
+              <div className="flex flex-wrap gap-1.5">
+                {(Object.keys(CRITERIOS_LABEL) as CriterioDesempate[]).map((c) => {
+                  const ativo = cfg.criterios_desempate.includes(c);
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => toggleCriterio(c)}
+                      className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold border transition ${
+                        ativo
+                          ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
+                          : 'border-slate-700 bg-slate-900 text-slate-400'
+                      }`}
+                    >
+                      {ativo ? `${cfg.criterios_desempate.indexOf(c) + 1}. ` : ''}{CRITERIOS_LABEL[c]}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -511,9 +668,10 @@ function TorneioPainel({
   const sumulas = useMemo(() => store.sumulas.filter((s) => s.torneio_id === torneio.id), [store.sumulas, torneio.id]);
   const eventos = useMemo(() => store.eventos.filter((e) => e.torneio_id === torneio.id), [store.eventos, torneio.id]);
 
-  const tabela = useMemo(() => calcularTabela(times, jogos), [times, jogos]);
+  const tabela = useMemo(() => calcularTabela(times, jogos, torneio.config, eventos), [times, jogos, torneio.config, eventos]);
   const artilharia = useMemo(() => calcularArtilharia(eventos, times), [eventos, times]);
-  const disciplina = useMemo(() => calcularDisciplina(eventos, times), [eventos, times]);
+  const disciplina = useMemo(() => calcularDisciplina(eventos, times, torneio.config), [eventos, times, torneio.config]);
+  const cfgAtiva = { ...DEFAULT_TORNEIO_CONFIG, ...torneio.config };
 
   // Forms equipes/atletas/jogos
   const [novoTimeNome, setNovoTimeNome] = useState('');
@@ -814,6 +972,21 @@ function TorneioPainel({
               </div>
             </div>
           </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 space-y-2">
+            <h3 className="text-sm font-bold text-white">Configurações Técnicas &amp; Disciplina</h3>
+            <div className="grid sm:grid-cols-3 gap-2 text-xs text-slate-300">
+              <p>Amarelos p/ suspensão: <strong className="text-white">{cfgAtiva.amarelos_suspensao || 'Não suspende'}</strong></p>
+              <p>Vermelho: <strong className="text-white">{cfgAtiva.vermelho_jogos_suspensao} jogo(s) de suspensão</strong></p>
+              <p>Zera cartões: <strong className="text-white">{ZERAR_CARTOES_LABEL[cfgAtiva.zerar_cartoes]}</strong></p>
+              <p>Confrontos: <strong className="text-white">{cfgAtiva.ida_e_volta ? 'Dentro e Fora de Casa (Ida e Volta)' : 'Jogo Único / Turno Único'}</strong></p>
+              <p>Pontuação: <strong className="text-white">{cfgAtiva.pontos_vitoria} vitória / {cfgAtiva.pontos_empate} empate</strong></p>
+              <p>Tolerância W.O.: <strong className="text-white">{cfgAtiva.tolerancia_wo_min} min</strong></p>
+            </div>
+            <p className="text-xs text-slate-400">
+              Critérios de desempate: <strong className="text-slate-200">{cfgAtiva.criterios_desempate.map((c) => CRITERIOS_LABEL[c]).join(' → ')}</strong>
+            </p>
+          </div>
         </div>
       )}
 
@@ -960,6 +1133,9 @@ function TorneioPainel({
                     <div>
                       <span className="font-medium text-white">{d.nome}</span>
                       <span className="text-xs text-slate-400 ml-1.5">({d.time_nome})</span>
+                      {d.motivo_suspensao && (
+                        <span className="block text-[11px] text-red-400">{d.motivo_suspensao}</span>
+                      )}
                     </div>
                     <div className="flex items-center gap-1.5 text-xs">
                       {d.amarelos > 0 && <span className="rounded bg-amber-400 px-1.5 py-0.5 font-bold text-slate-950">{d.amarelos} CA</span>}

@@ -37,35 +37,35 @@ export default function ConfiguracoesPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
-  // Estado geral de configurações da escolinha
+  // Estado geral de configurações da escolinha (Grêmio Concórdia)
   const [config, setConfig] = useState({
     // Identidade Visual
-    logoUrl: '',
-    schoolName: 'Escolinha de Futebol Craques Pro',
-    tradeName: 'Craques Pro',
-    documentNumber: '12.345.678/0001-90',
-    directorName: 'Prof. Carlos Eduardo Silveira',
+    logoUrl: '/gremio-concordia-logo.svg',
+    schoolName: 'Escola de Futebol Grêmio Concórdia',
+    tradeName: 'Grêmio Concórdia',
+    documentNumber: '30.123.456/0001-80',
+    directorName: 'Coordenação Técnica Grêmio Concórdia',
     
     // Contato
-    phone: '(11) 98765-4321',
-    email: 'contato@escolinhacraquespro.com.br',
+    phone: '(49) 98896-8754',
+    email: 'contato@gremioconcordia.com.br',
     
     // Endereço e Instalações
-    postalCode: '04571-010',
-    addressStreet: 'Av. dos Esportes',
-    addressNumber: '1500',
-    addressComplement: 'Complexo Arena Central - Portão 2',
-    addressNeighborhood: 'Jardim Esportivo',
-    addressCity: 'São Paulo',
-    addressState: 'SP',
-    operatingHours: 'Segunda a Sábado, das 07h às 21h',
+    postalCode: '89700-000',
+    addressStreet: 'Rua Gregório Bressan',
+    addressNumber: 'S/N',
+    addressComplement: 'Próximo ao SENAI · @ctgremioconcordia',
+    addressNeighborhood: 'São Cristóvão',
+    addressCity: 'Concórdia',
+    addressState: 'SC',
+    operatingHours: 'Treinos 3x por semana (Turmas de 4 a 15 anos · Desde 2018)',
     numberOfFields: 3,
 
     // Financeiro & Chave Pix
-    pixKeyType: 'CNPJ',
-    pixKey: '12.345.678/0001-90',
-    pixHolderName: 'Escola de Formação Esportiva Craques Pro Ltda',
-    pixBank: 'Banco Inter (077)',
+    pixKeyType: 'Telefone',
+    pixKey: '(49) 98896-8754',
+    pixHolderName: 'Escola de Futebol Grêmio Concórdia',
+    pixBank: 'Unidade Conveniada Grêmio FBPA',
     defaultDueDay: 10,
     gracePeriodDays: 3,
 
@@ -272,6 +272,7 @@ export default function ConfiguracoesPage() {
             <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block pt-2">Paletas Rápidas</label>
             <div className="flex flex-wrap gap-2">
               {[
+                { nome: 'Grêmio Tricolor', primary: '#009fe3', secondary: '#005f8f' },
                 { nome: 'Esmeralda', primary: '#10b981', secondary: '#14b8a6' },
                 { nome: 'Azul Royal', primary: '#3b82f6', secondary: '#2563eb' },
                 { nome: 'Rubro', primary: '#ef4444', secondary: '#dc2626' },

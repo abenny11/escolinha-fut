@@ -18,26 +18,25 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Mapeamento dinâmico das superfícies e textos para Tema Claro/Escuro e Cores Personalizadas */
+/* Mapeamento dinâmico completo (incluindo opacidades /30, /40, /50, /60, /70, /80, /90) */
 .bg-slate-900 {
   background-color: var(--theme-bg) !important;
 }
-.bg-slate-950,
-.bg-slate-950\/90 {
+
+[class*="bg-slate-950"] {
   background-color: var(--theme-surface) !important;
 }
-.bg-slate-900\/40,
-.bg-slate-900\/50,
-.bg-slate-900\/60,
-.bg-slate-900\/80,
-.bg-slate-900\/90 {
+
+[class*="bg-slate-900\/"] {
   background-color: var(--theme-surface-2) !important;
 }
 
-.border-slate-800,
-.border-slate-800\/60,
-.border-slate-800\/80,
-.border-slate-700 {
+[class*="bg-slate-800"] {
+  background-color: var(--theme-surface-2) !important;
+}
+
+[class*="border-slate-800"],
+[class*="border-slate-700"] {
   border-color: var(--theme-border) !important;
 }
 
@@ -67,18 +66,11 @@ body {
 .text-teal-400 {
   color: var(--theme-secondary) !important;
 }
-.border-emerald-500,
-.border-emerald-500\/30,
-.border-emerald-500\/40,
-.border-emerald-500\/50,
-.border-emerald-500\/60 {
+[class*="border-emerald-500"] {
   border-color: var(--theme-primary) !important;
 }
-.bg-emerald-500\/5,
-.bg-emerald-500\/10,
-.bg-emerald-500\/15,
-.bg-emerald-500\/20,
-.bg-emerald-600\/20 {
+[class*="bg-emerald-500\/"],
+[class*="bg-emerald-600\/"] {
   background-color: color-mix(in srgb, var(--theme-primary) 14%, transparent) !important;
 }
 
@@ -91,7 +83,10 @@ body {
   color: #ffffff !important;
 }
 
-/* Inputs e selects no tema claro */
+/* Ajustes específicos para o Tema Claro */
+html[data-theme="light"] [class*="bg-slate-950"] {
+  box-shadow: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+}
 html[data-theme="light"] input,
 html[data-theme="light"] select,
 html[data-theme="light"] textarea {

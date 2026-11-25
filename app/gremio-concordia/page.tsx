@@ -91,9 +91,8 @@ export default function GremioConcordiaLanding() {
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-6 md:pb-24">
           <nav className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="grid size-11 place-items-center rounded-xl bg-gradient-to-br from-[#009fe3] to-[#005f8f] font-black text-white ring-2 ring-white/20 shadow-lg">
-                GF
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gremio-concordia-logo.svg" alt="Grêmio Concórdia" className="size-12 rounded-xl ring-2 ring-white/20 shadow-lg bg-[#050912]" />
               <div>
                 <span className="block text-base sm:text-lg font-black tracking-tight leading-none">
                   Grêmio Concórdia

@@ -32,8 +32,8 @@ export function Sidebar() {
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const { currentRole, setRole, roleLabels } = useAppRole();
   const { theme, toggleMode } = useTheme();
-  const [customLogo, setCustomLogo] = useState('');
-  const [customSchoolName, setCustomSchoolName] = useState('Sportdesk');
+  const [customLogo, setCustomLogo] = useState('/gremio-concordia-logo.svg');
+  const [customSchoolName, setCustomSchoolName] = useState('Grêmio Concórdia');
 
   useEffect(() => {
     try {
@@ -62,6 +62,7 @@ export function Sidebar() {
     { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: Award, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/gamificacao', label: 'Evolução Técnica & Estrelas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/portal-pais', label: 'Área do Responsável', icon: Users, roles: ['guardian_portal'] },
+    { href: '/gremio-concordia', label: 'Site / Landing Page', icon: Award, roles: ['admin', 'secretary', 'coach', 'guardian_portal'] },
     { href: '/configuracoes', label: 'Configurações', icon: Settings, roles: ['admin', 'secretary'] },
   ];
 

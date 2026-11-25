@@ -14,16 +14,16 @@ export interface ThemeSettings {
 
 export const DEFAULT_DARK_THEME: ThemeSettings = {
   mode: 'dark',
-  primaryColor: '#10b981',
-  secondaryColor: '#14b8a6',
+  primaryColor: '#009fe3',
+  secondaryColor: '#005f8f',
   textPrimary: '#f1f5f9',
   textSecondary: '#94a3b8',
 };
 
 export const DEFAULT_LIGHT_THEME: ThemeSettings = {
   mode: 'light',
-  primaryColor: '#059669',
-  secondaryColor: '#0d9488',
+  primaryColor: '#0086c3',
+  secondaryColor: '#005f8f',
   textPrimary: '#0f172a',
   textSecondary: '#475569',
 };
