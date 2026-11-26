@@ -15,6 +15,7 @@ import {
   MessageSquareQuote
 } from 'lucide-react';
 import { mockStudents, mockCharges } from '@/lib/mock-data';
+import { CompletarFichaCriancaCard } from '@/components/CompletarFichaCriancaCard';
 
 export default function PortalPaisPage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string>(mockStudents[0]?.id);
@@ -79,6 +80,9 @@ export default function PortalPaisPage() {
           ))}
         </div>
       </div>
+
+      {/* Ficha Cadastral Completa da Criança (pós-aprovação) */}
+      <CompletarFichaCriancaCard />
 
       {/* Cartão do Atleta & Carteirinha Digital */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

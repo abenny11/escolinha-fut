@@ -32,6 +32,7 @@ import {
   DominantFoot, 
   MatchScoutStats
 } from '@/lib/types';
+import { CadastrosPendentesCard } from '@/components/CadastrosPendentesCard';
 
 export default function AlunosPage() {
   const [students, setStudents] = useState<Student[]>(mockStudents);
@@ -209,6 +210,9 @@ export default function AlunosPage() {
           </button>
         </div>
       )}
+
+      {/* Pré-cadastros de responsáveis aguardando aprovação */}
+      <CadastrosPendentesCard />
 
       {/* Barra de Filtros e Busca */}
       <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 flex flex-col md:flex-row gap-3">
