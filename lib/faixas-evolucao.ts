@@ -13,57 +13,57 @@ export interface FaixaNivel {
 export const FAIXAS_ESCOLINHA: FaixaNivel[] = [
   {
     ordem: 1,
-    id: 'branca',
-    nome: 'Faixa Branca',
-    subtitulo: 'Iniciante',
-    corHex: '#e2e8f0',
+    id: 'sub7',
+    nome: 'Sub-5 / Sub-7',
+    subtitulo: '4 a 7 anos · Iniciação',
+    corHex: '#38bdf8',
     minPontos: 0,
-    requisitos: 'Primeiros passos, coordenação motora e integração com a turma.',
+    requisitos: 'Coordenação motora, ludicidade, condução básica e primeiros jogos.',
   },
   {
     ordem: 2,
-    id: 'azul_celeste',
-    nome: 'Faixa Azul Celeste',
-    subtitulo: 'Base Tricolor',
-    corHex: '#38bdf8',
+    id: 'sub9',
+    nome: 'Sub-9',
+    subtitulo: '8 e 9 anos · Pré-Mirim',
+    corHex: '#0ea5e9',
     minPontos: 150,
-    requisitos: 'Domínio básico de bola, passe curto e frequência acima de 75%.',
+    requisitos: 'Passe curto, domínio orientado, noções de espaço e frequência 75%+.',
   },
   {
     ordem: 3,
-    id: 'azul_marinho',
-    nome: 'Faixa Azul Marinho',
-    subtitulo: 'Em Formação',
+    id: 'sub11',
+    nome: 'Sub-11',
+    subtitulo: '10 e 11 anos · Mirim',
     corHex: '#0284c7',
     minPontos: 300,
-    requisitos: 'Condução em velocidade, posicionamento tático e trabalho em equipe.',
+    requisitos: 'Posicionamento tático, finalização, tomada de decisão e liga interna.',
   },
   {
     ordem: 4,
-    id: 'prata',
-    nome: 'Faixa Prata',
-    subtitulo: 'Destaque da Turma',
-    corHex: '#94a3b8',
+    id: 'sub13',
+    nome: 'Sub-13',
+    subtitulo: '12 e 13 anos · Infantil',
+    corHex: '#0369a1',
     minPontos: 500,
-    requisitos: 'Participação em liga interna/amistosos, fair play e leitura de jogo.',
+    requisitos: 'Transição ofensiva/defensiva, torneios regionais e leitura de jogo.',
   },
   {
     ordem: 5,
-    id: 'ouro',
-    nome: 'Faixa Ouro',
-    subtitulo: 'Capitão / Referência',
+    id: 'sub15',
+    nome: 'Sub-15',
+    subtitulo: '14 e 15 anos · Juvenil',
     corHex: '#f59e0b',
     minPontos: 750,
-    requisitos: 'Liderança positiva, técnica apurada e assiduidade exemplar.',
+    requisitos: 'Alto rendimento formativo, intensidade competitiva e liderança em campo.',
   },
   {
     ordem: 6,
-    id: 'tricolor',
-    nome: 'Faixa Preta & Tricolor',
-    subtitulo: 'Craque Grêmio Concórdia',
+    id: 'base_gremio',
+    nome: 'Avaliação Grêmio FBPA',
+    subtitulo: 'Seleção / Porto Alegre',
     corHex: '#009fe3',
     minPontos: 1000,
-    requisitos: 'Nível máximo da escolinha: apto para avaliações oficiais do Grêmio FBPA.',
+    requisitos: 'Atleta destaque indicado para avaliações oficiais na matriz do Grêmio FBPA.',
   },
 ];
 
@@ -76,7 +76,7 @@ export interface ProgressoAtleta {
   historico: Array<{ data: string; descricao: string; pontos: number }>;
 }
 
-const STORAGE_KEY = 'gremio_concordia_faixas_v1';
+const STORAGE_KEY = 'gremio_concordia_faixas_idade_v2';
 
 export function calcularFaixaPorPontos(pontos: number): FaixaNivel {
   let atual = FAIXAS_ESCOLINHA[0];
@@ -105,17 +105,17 @@ export function loadProgressosFaixas(): ProgressoAtleta[] {
     }
   }
   const seed: ProgressoAtleta[] = mockStudents.slice(0, 8).map((s, idx) => {
-    const pts = s.total_points || [180, 340, 520, 90, 780, 410, 220, 1020][idx % 8];
+    const pts = [180, 340, 520, 90, 780, 410, 220, 1020][idx % 8];
     return {
       studentId: s.id,
       studentName: s.full_name,
-      categoria: s.current_class?.name || 'Sub-11',
+      categoria: calcularFaixaPorPontos(pts).nome,
       pontos: pts,
       faixaId: calcularFaixaPorPontos(pts).id,
       historico: [
         {
           data: new Date().toISOString().slice(0, 10),
-          descricao: 'Avaliação inicial da temporada',
+          descricao: 'Avaliação inicial da categoria',
           pontos: pts,
         },
       ],

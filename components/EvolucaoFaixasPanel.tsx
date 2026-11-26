@@ -98,9 +98,9 @@ export function EvolucaoFaixasPanel({ canEdit = false }: { canEdit?: boolean }) 
         <div className="flex items-center gap-2">
           <Award className="size-5 text-emerald-400" />
           <div>
-            <h2 className="text-base font-bold text-white">Trilha de Evolução por Fases &amp; Faixas</h2>
+            <h2 className="text-base font-bold text-white">Evolução por Faixas Etárias &amp; Categorias</h2>
             <p className="text-xs text-slate-400">
-              Acompanhe a progressão do atleta da Faixa Branca até a Faixa Preta &amp; Tricolor.
+              Acompanhe a progressão do atleta nas categorias do futebol (Sub-5/Sub-7 até Sub-15 e Avaliação Grêmio FBPA).
             </p>
           </div>
         </div>
