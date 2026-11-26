@@ -55,11 +55,11 @@ function LinhasCampo({ className }: { className?: string }) {
 }
 
 const CATEGORIAS = [
-  { nome: 'Sub-5 / Sub-7', idade: '4 a 7 anos', foco: 'Coordenação motora, ludicidade e primeiros toques na bola', freq: '3x por semana' },
-  { nome: 'Sub-9', idade: '8 e 9 anos', foco: 'Fundamentos de passe, condução, domínio e espírito de equipe', freq: '3x por semana' },
-  { nome: 'Sub-11', idade: '10 e 11 anos', foco: 'Noções táticas, tomada de decisão e liga interna', freq: '3x por semana' },
-  { nome: 'Sub-13', idade: '12 e 13 anos', foco: 'Aperfeiçoamento técnico, posicionamento e torneios regionais', freq: '3x por semana' },
-  { nome: 'Sub-15', idade: '14 e 15 anos', foco: 'Alto rendimento formativo, preparação competitiva e amistosos', freq: '3x por semana' },
+  { nome: 'Sub-5 / Sub-7', idade: '4 a 7 anos', idadePadrao: '6', foco: 'Coordenação motora, ludicidade e primeiros toques na bola', freq: '3x por semana' },
+  { nome: 'Sub-9', idade: '8 e 9 anos', idadePadrao: '9', foco: 'Fundamentos de passe, condução, domínio e espírito de equipe', freq: '3x por semana' },
+  { nome: 'Sub-11', idade: '10 e 11 anos', idadePadrao: '11', foco: 'Noções táticas, tomada de decisão e liga interna', freq: '3x por semana' },
+  { nome: 'Sub-13', idade: '12 e 13 anos', idadePadrao: '13', foco: 'Aperfeiçoamento técnico, posicionamento e torneios regionais', freq: '3x por semana' },
+  { nome: 'Sub-15', idade: '14 e 15 anos', idadePadrao: '15', foco: 'Alto rendimento formativo, preparação competitiva e amistosos', freq: '3x por semana' },
 ];
 
 const AVALIACOES = [
@@ -73,10 +73,22 @@ export default function GremioConcordiaLanding() {
   const [torneios, setTorneios] = useState<Torneio[]>([]);
   const [alunoNome, setAlunoNome] = useState('');
   const [alunoIdade, setAlunoIdade] = useState('10');
+  const [categoriaSel, setCategoriaSel] = useState('Sub-11');
   const [responsavel, setResponsavel] = useState('');
   const [turno, setTurno] = useState('Tarde');
   const [erroForm, setErroForm] = useState('');
   const [enviando, setEnviando] = useState(false);
+
+  function irParaFormulario(cat?: { nome: string; idadePadrao: string }) {
+    if (cat) {
+      setCategoriaSel(cat.nome);
+      setAlunoIdade(cat.idadePadrao);
+    }
+    const el = document.getElementById('experimental');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   const [fotos, setFotos] = useState<GaleriaFoto[]>(DEFAULT_GALERIA_FOTOS);
   const [slideIdx, setSlideIdx] = useState(0);
 
@@ -126,7 +138,7 @@ export default function GremioConcordiaLanding() {
     const msg = [
       'Olá! Gostaria de agendar um *Treino Experimental Gratuito* na Escola de Futebol do Grêmio Concórdia:',
       `• *Atleta:* ${alunoNome.trim()}`,
-      `• *Idade:* ${idadeNum} anos`,
+      `• *Idade:* ${idadeNum} anos (${categoriaSel})`,
       `• *Responsável:* ${responsavel.trim()}`,
       `• *Turno de preferência:* ${turno}`,
     ].join('\n');
@@ -220,9 +232,7 @@ export default function GremioConcordiaLanding() {
                   Agendar Treino Experimental Gratuito
                 </a>
                 <a
-                  href={zapGeral}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#experimental"
                   className="flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-5 py-3.5 text-sm sm:text-base font-bold text-white hover:bg-white/20 transition"
                 >
                   <MessageCircle className="size-5 text-[#38bdf8]" /> WhatsApp {WHATSAPP_DISPLAY}
@@ -447,14 +457,13 @@ export default function GremioConcordiaLanding() {
                   <h3 className="mt-2 font-black text-lg text-[#0b1320]">{c.nome}</h3>
                   <p className="mt-1.5 text-xs text-slate-600 leading-relaxed">{c.foco}</p>
                 </div>
-                <a
-                  href={zapUrl(`Olá! Gostaria de agendar um treino experimental na categoria ${c.nome} (${c.idade}).`)}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => irParaFormulario(c)}
                   className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#050912] px-3 py-2 text-xs font-bold text-white hover:bg-[#009fe3] transition"
                 >
                   Agendar aula
-                </a>
+                </button>
               </div>
             ))}
           </div>
@@ -575,6 +584,21 @@ export default function GremioConcordiaLanding() {
             )}
 
             <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Categoria</label>
+              <select
+                value={categoriaSel}
+                onChange={(e) => setCategoriaSel(e.target.value)}
+                className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none focus:border-[#009fe3]"
+              >
+                {CATEGORIAS.map((c) => (
+                  <option key={c.nome} value={c.nome}>
+                    {c.nome} ({c.idade})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">Nome do Aluno / Atleta *</label>
               <input
                 required
@@ -693,9 +717,7 @@ export default function GremioConcordiaLanding() {
           Agendar Treino Grátis
         </a>
         <a
-          href={zapGeral}
-          target="_blank"
-          rel="noopener noreferrer"
+          href="#experimental"
           className="flex items-center justify-center gap-1.5 rounded-xl bg-[#050912] px-4 py-3 text-xs font-bold text-white"
         >
           <MessageCircle className="size-4 text-[#38bdf8]" /> WhatsApp
