@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { mockStudents, mockCharges } from '@/lib/mock-data';
 import { CompletarFichaCriancaCard } from '@/components/CompletarFichaCriancaCard';
+import { EvolucaoFaixasPanel } from '@/components/EvolucaoFaixasPanel';
 
 export default function PortalPaisPage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string>(mockStudents[0]?.id);
@@ -83,6 +84,9 @@ export default function PortalPaisPage() {
 
       {/* Ficha Cadastral Completa da Criança (pós-aprovação) */}
       <CompletarFichaCriancaCard />
+
+      {/* Evolução por Fases / Faixas */}
+      <EvolucaoFaixasPanel canEdit={false} />
 
       {/* Cartão do Atleta & Carteirinha Digital */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

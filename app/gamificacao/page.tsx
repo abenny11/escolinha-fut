@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { mockStudents, mockSportsSkills, mockClasses } from '@/lib/mock-data';
 import { Student, SportSkillDimension } from '@/lib/types';
+import { EvolucaoFaixasPanel } from '@/components/EvolucaoFaixasPanel';
 
 export default function GamificacaoPage() {
   const [students, setStudents] = useState<Student[]>(mockStudents);
@@ -104,6 +105,9 @@ export default function GamificacaoPage() {
           Reconheça a dedicação, fundamentos e evolução dos atletas nos treinos.
         </p>
       </div>
+
+      {/* Trilha de Fases / Faixas */}
+      <EvolucaoFaixasPanel canEdit />
 
       {/* Toast de Sucesso */}
       {successToast && (
