@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, CheckCircle2, Lock, LogIn, Mail, Phone, ShieldCheck, User, UserPlus } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Lock, LogIn, Mail, Phone, User, UserPlus } from 'lucide-react';
 import { useAppRole } from '@/contexts/RoleContext';
-import { autenticarResponsavel, registrarPreCadastro } from '@/lib/cadastros-responsaveis';
+import { registrarPreCadastro } from '@/lib/cadastros-responsaveis';
+import { autenticarUsuarioSistema } from '@/lib/usuarios-acesso';
 import type { AppRole } from '@/lib/types';
 
 const HOME_BY_ROLE: Record<AppRole, string> = {
@@ -15,22 +16,14 @@ const HOME_BY_ROLE: Record<AppRole, string> = {
   guardian_portal: '/portal-pais',
 };
 
-const DEMO_ACCOUNTS: { role: AppRole; email: string; label: string; desc: string }[] = [
-  { role: 'admin', email: 'diretoria@gremioconcordia.com.br', label: 'Dono / Diretor', desc: 'Acesso total ao sistema' },
-  { role: 'secretary', email: 'secretaria@gremioconcordia.com.br', label: 'Secretaria', desc: 'Alunos, matrículas, caixa e torneios' },
-  { role: 'coach', email: 'professor@gremioconcordia.com.br', label: 'Professor / Técnico', desc: 'Chamada, treinos e marcação ao vivo' },
-  { role: 'guardian_portal', email: 'responsavel@gremioconcordia.com.br', label: 'Pais / Responsável', desc: 'Portal do atleta e ficha completa' },
-];
-
 export default function LoginPage() {
   const router = useRouter();
   const { setRole } = useAppRole();
   const [modo, setModo] = useState<'entrar' | 'cadastrar'>('entrar');
 
-  // Login
-  const [email, setEmail] = useState('diretoria@gremioconcordia.com.br');
-  const [senha, setSenha] = useState('123456');
-  const [perfil, setPerfil] = useState<AppRole>('admin');
+  // Login automático por e-mail, telefone ou usuário + senha
+  const [identificador, setIdentificador] = useState('');
+  const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
 
   // Pré-cadastro simples de responsável
@@ -42,39 +35,29 @@ export default function LoginPage() {
   const [criancaIdade, setCriancaIdade] = useState('10');
   const [cadastroSucesso, setCadastroSucesso] = useState(false);
 
-  function entrar(targetRole: AppRole, targetEmail: string, isDemo = false) {
+  function entrar() {
     setErro('');
-    if (!targetEmail.trim() || !targetEmail.includes('@')) {
-      return setErro('Informe um e-mail válido.');
-    }
-    if (!isDemo && senha.length < 4) {
-      return setErro('Informe a senha de acesso (mínimo 4 caracteres).');
+    const auth = autenticarUsuarioSistema(identificador, senha);
+    if (!auth.ok || !auth.role) {
+      return setErro(auth.erro || 'Não foi possível entrar.');
     }
 
-    let cadastroId: string | undefined;
-    if (targetRole === 'guardian_portal' && !isDemo) {
-      const auth = autenticarResponsavel(targetEmail, senha);
-      if (!auth.ok) {
-        return setErro(auth.erro || 'Não foi possível entrar.');
-      }
-      cadastroId = auth.cadastro?.id;
-    }
-
-    setRole(targetRole);
+    setRole(auth.role);
     try {
       localStorage.setItem(
         'escolinha_auth_user_v1',
         JSON.stringify({
-          email: targetEmail.trim(),
-          role: targetRole,
-          cadastroId,
+          email: auth.email || identificador.trim(),
+          nome: auth.nome,
+          role: auth.role,
+          cadastroId: auth.cadastroId,
           loggedAt: new Date().toISOString(),
         }),
       );
     } catch {
       // ignore
     }
-    router.push(HOME_BY_ROLE[targetRole]);
+    router.push(HOME_BY_ROLE[auth.role]);
   }
 
   function enviarPreCadastro(e: React.FormEvent) {
@@ -164,89 +147,56 @@ export default function LoginPage() {
           )}
 
           {modo === 'entrar' ? (
-            <>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  entrar(perfil, email, false);
-                }}
-                className="space-y-4"
-              >
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Perfil de Acesso</label>
-                  <select
-                    value={perfil}
-                    onChange={(e) => {
-                      const r = e.target.value as AppRole;
-                      setPerfil(r);
-                      const found = DEMO_ACCOUNTS.find((a) => a.role === r);
-                      if (found) setEmail(found.email);
-                    }}
-                    className="h-11 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-white outline-none focus:border-[#009fe3]"
-                  >
-                    {DEMO_ACCOUNTS.map((a) => (
-                      <option key={a.role} value={a.role}>
-                        {a.label} — {a.desc}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">E-mail</label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3.5 size-4 text-slate-400" />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-slate-700 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none focus:border-[#009fe3]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Senha</label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3.5 size-4 text-slate-400" />
-                    <input
-                      type="password"
-                      required
-                      value={senha}
-                      onChange={(e) => setSenha(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-slate-700 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none focus:border-[#009fe3]"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full flex items-center justify-center gap-2 rounded-xl border-b-4 border-[#006fa1] bg-[#009fe3] py-3 text-sm font-bold text-white hover:bg-[#008ecc] transition"
-                >
-                  <LogIn className="size-4" /> Entrar no Painel
-                </button>
-              </form>
-
-              <div className="border-t border-white/10 pt-4 space-y-2">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <ShieldCheck className="size-3.5 text-[#38bdf8]" /> Acesso Rápido por Perfil (Demo)
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {DEMO_ACCOUNTS.map((acc) => (
-                    <button
-                      key={acc.role}
-                      type="button"
-                      onClick={() => entrar(acc.role, acc.email, true)}
-                      className="rounded-xl border border-slate-800 bg-slate-900/70 p-2.5 text-left hover:border-[#009fe3] transition"
-                    >
-                      <span className="block text-xs font-bold text-white">{acc.label}</span>
-                      <span className="block text-[10px] text-slate-400 truncate">{acc.desc}</span>
-                    </button>
-                  ))}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                entrar();
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">
+                  E-mail, Telefone ou Usuário
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3.5 size-4 text-slate-400" />
+                  <input
+                    type="text"
+                    required
+                    value={identificador}
+                    onChange={(e) => setIdentificador(e.target.value)}
+                    placeholder="seu@email.com, (49) 99999-9999 ou usuário"
+                    className="h-11 w-full rounded-xl border border-slate-700 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                  />
                 </div>
               </div>
-            </>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Senha</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3.5 size-4 text-slate-400" />
+                  <input
+                    type="password"
+                    required
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    placeholder="Digite sua senha"
+                    className="h-11 w-full rounded-xl border border-slate-700 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center gap-2 rounded-xl border-b-4 border-[#006fa1] bg-[#009fe3] py-3 text-sm font-bold text-white hover:bg-[#008ecc] transition"
+              >
+                <LogIn className="size-4" /> Entrar
+              </button>
+
+              <p className="text-[11px] text-center text-slate-400">
+                Seu perfil de acesso é identificado automaticamente pelo seu login.
+              </p>
+            </form>
           ) : cadastroSucesso ? (
             <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-5 text-center space-y-3">
               <CheckCircle2 className="size-10 text-emerald-400 mx-auto" />
@@ -259,8 +209,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => {
                   setModo('entrar');
-                  setPerfil('guardian_portal');
-                  setEmail(respEmail);
+                  setIdentificador(respEmail);
                   setCadastroSucesso(false);
                 }}
                 className="rounded-xl bg-[#009fe3] px-4 py-2 text-xs font-bold text-white"

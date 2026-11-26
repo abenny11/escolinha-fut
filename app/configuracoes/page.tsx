@@ -27,6 +27,13 @@ import {
 } from 'lucide-react';
 import { mockModalities, mockPlans } from '@/lib/mock-data';
 import { useTheme } from '@/contexts/ThemeContext';
+import type { AppRole } from '@/lib/types';
+import {
+  loadUsuariosAcesso,
+  ROLE_LABELS,
+  saveUsuariosAcesso,
+  type UsuarioAcesso,
+} from '@/lib/usuarios-acesso';
 import {
   comprimirImagemGaleria,
   DEFAULT_GALERIA_FOTOS,
@@ -43,6 +50,19 @@ export default function ConfiguracoesPage() {
   const [novaFotoUrl, setNovaFotoUrl] = useState('');
   const [novaFotoTitulo, setNovaFotoTitulo] = useState('');
   const [novaFotoDesc, setNovaFotoDesc] = useState('');
+  const [activeTab, setActiveTab] = useState<'geral' | 'acesso'>('geral');
+  const [usuariosAcesso, setUsuariosAcesso] = useState<UsuarioAcesso[]>([]);
+  const [novoNome, setNovoNome] = useState('');
+  const [novoUsuario, setNovoUsuario] = useState('');
+  const [novoEmail, setNovoEmail] = useState('');
+  const [novoTelefone, setNovoTelefone] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [novoPerfil, setNovoPerfil] = useState<AppRole>('secretary');
+  const [acessoMsg, setAcessoMsg] = useState('');
+
+  useEffect(() => {
+    setUsuariosAcesso(loadUsuariosAcesso());
+  }, []);
 
   useEffect(() => {
     setGaleria(loadGaleriaFotos());
@@ -268,6 +288,244 @@ export default function ConfiguracoesPage() {
           </div>
         </div>
       )}
+
+      {/* Abas de Configurações */}
+      <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab('geral')}
+          className={`px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 ${
+            activeTab === 'geral'
+              ? 'bg-[#009fe3] text-white shadow-lg shadow-[#009fe3]/20'
+              : 'bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700'
+          }`}
+        >
+          <Building2 size={16} /> Geral &amp; Escola
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('acesso')}
+          className={`px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 ${
+            activeTab === 'acesso'
+              ? 'bg-[#009fe3] text-white shadow-lg shadow-[#009fe3]/20'
+              : 'bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700'
+          }`}
+        >
+          <Shield size={16} /> Acesso ({usuariosAcesso.length})
+        </button>
+      </div>
+
+      {activeTab === 'acesso' ? (
+        <div className="space-y-6">
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
+                  <Shield size={18} className="text-[#009fe3]" /> Cadastrar Novo Usuário de Acesso
+                </h2>
+                <p className="text-xs text-slate-400">
+                  O usuário poderá entrar com e-mail, telefone ou nome de usuário e senha. O perfil abaixo define automaticamente o que ele acessa.
+                </p>
+              </div>
+            </div>
+
+            {acessoMsg && (
+              <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs font-semibold">
+                {acessoMsg}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Nome completo</label>
+                <input
+                  type="text"
+                  value={novoNome}
+                  onChange={(e) => setNovoNome(e.target.value)}
+                  placeholder="Ex.: Maria Oliveira"
+                  className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Nome de usuário (login)</label>
+                <input
+                  type="text"
+                  value={novoUsuario}
+                  onChange={(e) => setNovoUsuario(e.target.value)}
+                  placeholder="Ex.: maria.sec"
+                  className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">E-mail</label>
+                <input
+                  type="email"
+                  value={novoEmail}
+                  onChange={(e) => setNovoEmail(e.target.value)}
+                  placeholder="maria@gremioconcordia.com.br"
+                  className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Telefone / WhatsApp</label>
+                <input
+                  type="text"
+                  value={novoTelefone}
+                  onChange={(e) => setNovoTelefone(e.target.value)}
+                  placeholder="(49) 99999-9999"
+                  className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Senha</label>
+                <input
+                  type="text"
+                  value={novaSenha}
+                  onChange={(e) => setNovaSenha(e.target.value)}
+                  placeholder="Mínimo 4 caracteres"
+                  className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Perfil do usuário</label>
+                <select
+                  value={novoPerfil}
+                  onChange={(e) => setNovoPerfil(e.target.value as AppRole)}
+                  className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-white outline-none focus:border-[#009fe3]"
+                >
+                  {(Object.keys(ROLE_LABELS) as AppRole[]).map((roleKey) => (
+                    <option key={roleKey} value={roleKey}>
+                      {ROLE_LABELS[roleKey]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!novoNome.trim() || (!novoEmail.trim() && !novoTelefone.trim() && !novoUsuario.trim()) || novaSenha.length < 4) {
+                    setAcessoMsg('Preencha nome, senha (mín. 4 caracteres) e ao menos e-mail, telefone ou usuário.');
+                    return;
+                  }
+                  const novo: UsuarioAcesso = {
+                    id: `usr-${Date.now().toString(36)}`,
+                    nome: novoNome.trim(),
+                    usuario: (novoUsuario.trim() || novoNome.trim().split(' ')[0]).toLowerCase(),
+                    email: novoEmail.trim().toLowerCase(),
+                    telefone: novoTelefone.trim(),
+                    senha: novaSenha,
+                    perfil: novoPerfil,
+                    ativo: true,
+                    criadoEm: new Date().toISOString(),
+                  };
+                  const atualizada = [novo, ...usuariosAcesso];
+                  setUsuariosAcesso(atualizada);
+                  saveUsuariosAcesso(atualizada);
+                  setNovoNome('');
+                  setNovoUsuario('');
+                  setNovoEmail('');
+                  setNovoTelefone('');
+                  setNovaSenha('');
+                  setAcessoMsg(`Usuário "${novo.nome}" criado com perfil ${ROLE_LABELS[novo.perfil]}.`);
+                }}
+                className="px-5 py-2.5 rounded-xl bg-[#009fe3] hover:bg-[#008ecc] text-white font-bold text-sm transition flex items-center gap-2"
+              >
+                <Plus size={16} /> Adicionar Usuário
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 space-y-3">
+            <h3 className="text-base font-extrabold text-white">Usuários Cadastrados &amp; Perfis</h3>
+            <div className="space-y-2.5">
+              {usuariosAcesso.map((u) => (
+                <div
+                  key={u.id}
+                  className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-white">{u.nome}</span>
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+                        @{u.usuario}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          u.ativo ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+                        }`}
+                      >
+                        {u.ativo ? 'Ativo' : 'Inativo'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      {u.email || 'Sem e-mail'} · {u.telefone || 'Sem telefone'} · Senha: {u.senha}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className="text-[11px] font-bold text-slate-400">Perfil do usuário:</label>
+                    <select
+                      value={u.perfil}
+                      onChange={(e) => {
+                        const novoP = e.target.value as AppRole;
+                        const atualizada = usuariosAcesso.map((item) =>
+                          item.id === u.id ? { ...item, perfil: novoP } : item,
+                        );
+                        setUsuariosAcesso(atualizada);
+                        saveUsuariosAcesso(atualizada);
+                        setAcessoMsg(`Perfil de "${u.nome}" atualizado para ${ROLE_LABELS[novoP]}.`);
+                      }}
+                      className="h-9 rounded-lg border border-slate-700 bg-slate-950 px-2.5 text-xs font-semibold text-white outline-none focus:border-[#009fe3]"
+                    >
+                      {(Object.keys(ROLE_LABELS) as AppRole[]).map((roleKey) => (
+                        <option key={roleKey} value={roleKey}>
+                          {ROLE_LABELS[roleKey]}
+                        </option>
+                      ))}
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const atualizada = usuariosAcesso.map((item) =>
+                          item.id === u.id ? { ...item, ativo: !item.ativo } : item,
+                        );
+                        setUsuariosAcesso(atualizada);
+                        saveUsuariosAcesso(atualizada);
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"
+                    >
+                      {u.ativo ? 'Desativar' : 'Ativar'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const adminsAtivos = usuariosAcesso.filter((x) => x.perfil === 'admin' && x.ativo && x.id !== u.id);
+                        if (u.perfil === 'admin' && adminsAtivos.length === 0) {
+                          setAcessoMsg('Mantenha pelo menos 1 usuário Dono / Administrador ativo.');
+                          return;
+                        }
+                        const atualizada = usuariosAcesso.filter((item) => item.id !== u.id);
+                        setUsuariosAcesso(atualizada);
+                        saveUsuariosAcesso(atualizada);
+                      }}
+                      className="p-1.5 rounded-lg border border-rose-800/60 bg-rose-950/40 text-rose-300 hover:bg-rose-900/50"
+                      title="Remover usuário"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
 
       {/* Controle de Tema Claro/Escuro e Cores Personalizadas */}
       <div id="aparencia" className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 space-y-5 mb-6">
@@ -1042,6 +1300,8 @@ export default function ConfiguracoesPage() {
           <Save size={18} /> Salvar Todas as Configurações
         </button>
       </div>
+        </>
+      )}
     </div>
   );
 }

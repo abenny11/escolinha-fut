@@ -149,14 +149,24 @@ export function salvarFichaCompletaCrianca(
 }
 
 export function autenticarResponsavel(
-  email: string,
+  identificador: string,
   senha: string,
 ): { ok: boolean; status?: StatusCadastro; cadastro?: CadastroResponsavel; erro?: string } {
-  const emailNorm = email.trim().toLowerCase();
+  const idTrim = identificador.trim();
+  const idLower = idTrim.toLowerCase();
+  const idDigits = idTrim.replace(/\D/g, '');
   const lista = loadCadastrosResponsaveis();
-  const found = lista.find((c) => c.responsavelEmail.toLowerCase() === emailNorm);
+  const found = lista.find((c) => {
+    const telDigits = c.responsavelTelefone.replace(/\D/g, '');
+    const matchTel = idDigits.length >= 8 && telDigits.length >= 8 && telDigits.endsWith(idDigits.slice(-8));
+    return (
+      c.responsavelEmail.toLowerCase() === idLower ||
+      c.responsavelNome.toLowerCase() === idLower ||
+      matchTel
+    );
+  });
   if (!found) {
-    return { ok: false, erro: 'E-mail não encontrado. Faça seu pré-cadastro primeiro.' };
+    return { ok: false, erro: 'Cadastro não encontrado. Faça seu pré-cadastro primeiro.' };
   }
   if (found.senha !== senha) {
     return { ok: false, erro: 'Senha incorreta.' };
