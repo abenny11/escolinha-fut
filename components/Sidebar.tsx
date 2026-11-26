@@ -63,7 +63,6 @@ export function Sidebar() {
     { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: Award, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/gamificacao', label: 'Evolução Técnica & Estrelas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/portal-pais', label: 'Área do Responsável', icon: Users, roles: ['guardian_portal'] },
-    { href: '/', label: 'Site / Landing Page', icon: Award, roles: ['admin', 'secretary', 'coach', 'guardian_portal'] },
     { href: '/configuracoes', label: 'Configurações', icon: Settings, roles: ['admin', 'secretary'] },
   ];
 
@@ -73,7 +72,7 @@ export function Sidebar() {
     <>
       {/* Top Mobile Bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-950 border-b border-slate-800 px-4 py-3 flex items-center justify-between text-white">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition" title="Ir para a Landing Page">
           <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-slate-950 overflow-hidden">
             {customLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -86,7 +85,7 @@ export function Sidebar() {
             <span className="font-bold text-sm tracking-tight block leading-none">{customSchoolName}</span>
             <span className="text-[10px] text-emerald-400 font-semibold">{roleLabels[currentRole].name}</span>
           </div>
-        </div>
+        </Link>
         <button 
           onClick={() => setMobileOpen(!mobileOpen)}
           className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
@@ -108,9 +107,9 @@ export function Sidebar() {
         fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-800/80 flex flex-col transition-transform duration-200
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        {/* Header / Logo */}
+        {/* Header / Logo (clique vai para a Landing Page) */}
         <div className="p-4 border-b border-slate-800/60">
-          <div className="flex items-center gap-3">
+          <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 hover:opacity-90 transition" title="Ir para a Landing Page">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20 overflow-hidden">
               {customLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -123,7 +122,7 @@ export function Sidebar() {
               <h1 className="font-black text-slate-100 text-base leading-tight tracking-tight truncate">{customSchoolName}</h1>
               <p className="text-[11px] text-emerald-400 font-semibold">Gestão & Performance</p>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Chave Seletora de Visão / Permissionamento (Igual ao Escola Pro) */}
