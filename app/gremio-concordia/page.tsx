@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Clock,
   Loader2,
+  LogIn,
   MapPin,
   MessageCircle,
   Phone,
@@ -200,6 +201,12 @@ export default function GremioConcordiaLanding() {
               >
                 Treino Grátis
               </a>
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white hover:bg-white/20 transition"
+              >
+                <LogIn className="size-3.5 text-[#38bdf8]" /> Login
+              </Link>
             </div>
           </nav>
 

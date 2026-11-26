@@ -19,7 +19,8 @@ import {
   Award,
   Sun,
   Moon,
-  Palette
+  Palette,
+  LogOut
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAppRole } from '@/contexts/RoleContext';
@@ -231,6 +232,18 @@ export function Sidebar() {
               <p className="text-xs font-semibold text-slate-200 truncate">Sessão Ativa</p>
               <p className="text-[10px] text-emerald-400 font-medium truncate">{roleLabels[currentRole].name}</p>
             </div>
+            <Link
+              href="/login"
+              onClick={() => {
+                try {
+                  localStorage.removeItem('escolinha_auth_user_v1');
+                } catch {}
+              }}
+              className="rounded-lg p-1.5 text-slate-400 hover:text-rose-400 transition"
+              title="Sair / Trocar usuário"
+            >
+              <LogOut size={14} />
+            </Link>
           </div>
         </div>
       </aside>
