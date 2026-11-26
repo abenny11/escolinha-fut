@@ -23,6 +23,7 @@ import {
   Users,
 } from 'lucide-react';
 import { loadTorneiosStore, modalidadeNome, type Torneio } from '@/lib/torneios';
+import { DEFAULT_GALERIA_FOTOS, loadGaleriaFotos, type GaleriaFoto } from '@/lib/galeria';
 
 const WHATSAPP_NUM = '5549988968754';
 const WHATSAPP_DISPLAY = '(49) 98896-8754';
@@ -63,35 +64,8 @@ const CATEGORIAS = [
 
 const AVALIACOES = [
   { autor: 'Marcos Oliveira (Pai Sub-11)', texto: 'Meu filho evoluiu muito na disciplina e na parte técnica. Os professores têm metodologia de verdade.' },
-  { autor: 'Fernanda Santos (Mãe Sub-9)', texto: 'Estrutura excelente no São Cristóvão, torneios organizados e a viagem para Porto Alegre foi inesquecível!' },
+  { autor: 'Fernanda Santos (Mãe Sub-9)', texto: 'Estrutura excelente no São Cristóvão, torneios organizados e a viagem para Porto Alegre foi inesprecível!' },
   { autor: 'Rodrigo Almeida (Pai Sub-13)', texto: 'Ambiente familiar, seguro e focado na formação do atleta e do cidadão.' },
-];
-
-const GALERIA_FOTOS = [
-  {
-    src: '/galeria/gremio-1.jpg',
-    alt: 'Atletas da Escola de Futebol Grêmio Concórdia em avaliação oficial',
-    titulo: 'Avaliações e Integração com a Base do Grêmio',
-    desc: 'Atletas de Concórdia vivenciando a metodologia oficial do Grêmio Foot-Ball Porto Alegrense.',
-  },
-  {
-    src: '/galeria/gremio-2.jpg',
-    alt: 'Campo de futebol preparado para treinos e competições da escolinha',
-    titulo: 'Treinos 3x por Semana (4 a 15 anos)',
-    desc: 'Turmas organizadas do Sub-5 ao Sub-15 no Bairro São Cristóvão, próximo ao SENAI.',
-  },
-  {
-    src: '/galeria/gremio-3.jpg',
-    alt: 'Formação técnica e fundamentos de futebol para categorias de base',
-    titulo: 'Formação Técnica, Tática e Valores',
-    desc: 'Desenvolvimento completo do atleta: passe, domínio, finalização, respeito e trabalho em equipe.',
-  },
-  {
-    src: '/galeria/gremio-4.jpg',
-    alt: 'Disputa de partida em torneio infantil e liga interna',
-    titulo: 'Liga Interna, Torneios e Amistosos',
-    desc: 'Competições internas e regionais ao longo de todo o ano com súmula oficial e premiação.',
-  },
 ];
 
 export default function GremioConcordiaLanding() {
@@ -103,14 +77,20 @@ export default function GremioConcordiaLanding() {
   const [turno, setTurno] = useState('Tarde');
   const [erroForm, setErroForm] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [fotos, setFotos] = useState<GaleriaFoto[]>(DEFAULT_GALERIA_FOTOS);
   const [slideIdx, setSlideIdx] = useState(0);
 
   useEffect(() => {
+    setFotos(loadGaleriaFotos());
+  }, []);
+
+  useEffect(() => {
+    if (fotos.length <= 1) return;
     const id = setInterval(() => {
-      setSlideIdx((prev) => (prev + 1) % GALERIA_FOTOS.length);
+      setSlideIdx((prev) => (prev + 1) % fotos.length);
     }, 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [fotos.length]);
 
   useEffect(() => {
     try {
@@ -376,58 +356,71 @@ export default function GremioConcordiaLanding() {
         </div>
 
         <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-[#050912] shadow-lg">
-          <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={GALERIA_FOTOS[slideIdx].src}
-              alt={GALERIA_FOTOS[slideIdx].alt}
-              loading="lazy"
-              className="size-full object-cover transition-all duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050912] via-[#050912]/30 to-transparent" />
-
-            <div className="absolute bottom-4 left-4 right-16 sm:bottom-6 sm:left-6 text-white space-y-1">
-              <span className="inline-block rounded-full bg-[#009fe3] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                Foto {slideIdx + 1} de {GALERIA_FOTOS.length}
-              </span>
-              <h3 className="text-lg sm:text-2xl font-black text-white">{GALERIA_FOTOS[slideIdx].titulo}</h3>
-              <p className="text-xs sm:text-sm text-slate-200 max-w-xl">{GALERIA_FOTOS[slideIdx].desc}</p>
-            </div>
-
-            <button
-              type="button"
-              aria-label="Foto anterior"
-              onClick={() => setSlideIdx((prev) => (prev - 1 + GALERIA_FOTOS.length) % GALERIA_FOTOS.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/50 text-white hover:bg-[#009fe3] transition"
-            >
-              <ChevronLeft className="size-5" />
-            </button>
-            <button
-              type="button"
-              aria-label="Próxima foto"
-              onClick={() => setSlideIdx((prev) => (prev + 1) % GALERIA_FOTOS.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/50 text-white hover:bg-[#009fe3] transition"
-            >
-              <ChevronRight className="size-5" />
-            </button>
-          </div>
-
-          {/* Miniaturas */}
-          <div className="grid grid-cols-4 gap-2 bg-[#050912] p-3">
-            {GALERIA_FOTOS.map((foto, i) => (
-              <button
-                key={foto.src}
-                type="button"
-                onClick={() => setSlideIdx(i)}
-                className={`relative aspect-[16/9] overflow-hidden rounded-xl border-2 transition ${
-                  i === slideIdx ? 'border-[#009fe3] opacity-100' : 'border-transparent opacity-55 hover:opacity-90'
-                }`}
-              >
+          {fotos.length > 0 && (
+            <>
+              <div className="relative h-[340px] sm:h-[460px] w-full overflow-hidden bg-[#050912]">
+                {/* Fundo desfocado para preencher as laterais sem cortar nenhuma foto */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={foto.src} alt={foto.alt} loading="lazy" className="size-full object-cover" />
-              </button>
-            ))}
-          </div>
+                <img
+                  src={fotos[slideIdx % fotos.length].src}
+                  alt=""
+                  aria-hidden
+                  className="absolute inset-0 size-full object-cover blur-2xl opacity-35 scale-110"
+                />
+                {/* Imagem principal inteira (sem cortes!) */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={fotos[slideIdx % fotos.length].src}
+                  alt={fotos[slideIdx % fotos.length].alt}
+                  loading="lazy"
+                  className="relative z-10 size-full object-contain transition-all duration-500"
+                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-36 bg-gradient-to-t from-[#050912] via-[#050912]/70 to-transparent" />
+
+                <div className="absolute bottom-4 left-4 right-16 sm:bottom-6 sm:left-6 z-30 text-white space-y-1">
+                  <span className="inline-block rounded-full bg-[#009fe3] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                    Foto {(slideIdx % fotos.length) + 1} de {fotos.length}
+                  </span>
+                  <h3 className="text-lg sm:text-2xl font-black text-white">{fotos[slideIdx % fotos.length].titulo}</h3>
+                  <p className="text-xs sm:text-sm text-slate-200 max-w-xl">{fotos[slideIdx % fotos.length].desc}</p>
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Foto anterior"
+                  onClick={() => setSlideIdx((prev) => (prev - 1 + fotos.length) % fotos.length)}
+                  className="absolute left-3 top-1/2 z-30 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/60 text-white hover:bg-[#009fe3] transition"
+                >
+                  <ChevronLeft className="size-5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Próxima foto"
+                  onClick={() => setSlideIdx((prev) => (prev + 1) % fotos.length)}
+                  className="absolute right-3 top-1/2 z-30 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/60 text-white hover:bg-[#009fe3] transition"
+                >
+                  <ChevronRight className="size-5" />
+                </button>
+              </div>
+
+              {/* Miniaturas com scroll horizontal */}
+              <div className="flex gap-2 overflow-x-auto bg-[#050912] p-3">
+                {fotos.map((foto, i) => (
+                  <button
+                    key={foto.id}
+                    type="button"
+                    onClick={() => setSlideIdx(i)}
+                    className={`relative h-16 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition ${
+                      i === slideIdx % fotos.length ? 'border-[#009fe3] opacity-100' : 'border-transparent opacity-55 hover:opacity-90'
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={foto.src} alt={foto.alt} loading="lazy" className="size-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
 

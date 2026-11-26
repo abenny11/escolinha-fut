@@ -21,14 +21,72 @@ import {
   Palette,
   Sun,
   Moon,
-  RotateCcw
+  RotateCcw,
+  Images,
+  Plus
 } from 'lucide-react';
 import { mockModalities, mockPlans } from '@/lib/mock-data';
 import { useTheme } from '@/contexts/ThemeContext';
+import {
+  comprimirImagemGaleria,
+  DEFAULT_GALERIA_FOTOS,
+  loadGaleriaFotos,
+  saveGaleriaFotos,
+  type GaleriaFoto,
+} from '@/lib/galeria';
 
 export default function ConfiguracoesPage() {
   const { theme, setTheme, resetTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galeriaInputRef = useRef<HTMLInputElement>(null);
+  const [galeria, setGaleria] = useState<GaleriaFoto[]>([]);
+  const [novaFotoUrl, setNovaFotoUrl] = useState('');
+  const [novaFotoTitulo, setNovaFotoTitulo] = useState('');
+  const [novaFotoDesc, setNovaFotoDesc] = useState('');
+
+  useEffect(() => {
+    setGaleria(loadGaleriaFotos());
+  }, []);
+
+  const atualizarGaleria = (next: GaleriaFoto[]) => {
+    setGaleria(next);
+    saveGaleriaFotos(next);
+  };
+
+  const handleUploadFotoGaleria = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const novas: GaleriaFoto[] = [];
+    for (const f of files) {
+      const dataUrl = await comprimirImagemGaleria(f);
+      novas.push({
+        id: `foto-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        src: dataUrl,
+        alt: novaFotoTitulo.trim() || f.name,
+        titulo: novaFotoTitulo.trim() || 'Grêmio Concórdia em Ação',
+        desc: novaFotoDesc.trim() || 'Treinos e atividades oficiais da Escola de Futebol Grêmio Concórdia.',
+      });
+    }
+    atualizarGaleria([...novas, ...galeria]);
+    setNovaFotoTitulo('');
+    setNovaFotoDesc('');
+    e.target.value = '';
+  };
+
+  const handleAdicionarFotoUrl = () => {
+    if (!novaFotoUrl.trim()) return;
+    const nova: GaleriaFoto = {
+      id: `foto-${Date.now()}`,
+      src: novaFotoUrl.trim(),
+      alt: novaFotoTitulo.trim() || 'Foto da escolinha',
+      titulo: novaFotoTitulo.trim() || 'Grêmio Concórdia em Ação',
+      desc: novaFotoDesc.trim() || 'Treinos e atividades oficiais da Escola de Futebol Grêmio Concórdia.',
+    };
+    atualizarGaleria([nova, ...galeria]);
+    setNovaFotoUrl('');
+    setNovaFotoTitulo('');
+    setNovaFotoDesc('');
+  };
   const [modalities, setModalities] = useState(mockModalities);
   const [plans] = useState(mockPlans);
   const [newModalityName, setNewModalityName] = useState('');
@@ -323,6 +381,97 @@ export default function ConfiguracoesPage() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Gerenciador de Imagens do Carrossel da Landing Page */}
+      <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5 space-y-4 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <Images className="text-emerald-400" size={20} />
+            <div>
+              <h2 className="text-base font-bold text-white">Galeria da Landing Page (Carrossel)</h2>
+              <p className="text-xs text-slate-400">
+                Adicione, remova ou personalize as fotos exibidas no carrossel de <strong className="text-slate-200">/gremio-concordia</strong> ({galeria.length} foto(s)).
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => atualizarGaleria(DEFAULT_GALERIA_FOTOS)}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white"
+          >
+            <RotateCcw size={13} /> Restaurar 8 Fotos Padrão
+          </button>
+        </div>
+
+        <div className="grid sm:grid-cols-4 gap-2">
+          <input
+            value={novaFotoTitulo}
+            onChange={(e) => setNovaFotoTitulo(e.target.value)}
+            placeholder="Título da foto (opcional)"
+            className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+          />
+          <input
+            value={novaFotoDesc}
+            onChange={(e) => setNovaFotoDesc(e.target.value)}
+            placeholder="Legenda / descrição (opcional)"
+            className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+          />
+          <div className="flex gap-2">
+            <input
+              value={novaFotoUrl}
+              onChange={(e) => setNovaFotoUrl(e.target.value)}
+              placeholder="Ou cole a URL da imagem..."
+              className="flex-1 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+            />
+            <button
+              type="button"
+              onClick={handleAdicionarFotoUrl}
+              className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-bold text-white hover:border-emerald-500"
+            >
+              <Plus size={14} />
+            </button>
+          </div>
+          <div>
+            <input
+              ref={galeriaInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleUploadFotoGaleria}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => galeriaInputRef.current?.click()}
+              className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-bold text-slate-950 hover:opacity-90"
+            >
+              <Upload size={14} /> Enviar Foto(s)
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {galeria.map((foto) => (
+            <div key={foto.id} className="group relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60">
+              <div className="aspect-[16/10] bg-slate-950 overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={foto.src} alt={foto.alt} className="size-full object-contain" />
+              </div>
+              <div className="p-2 flex items-center justify-between gap-2">
+                <p className="text-[11px] font-semibold text-white truncate">{foto.titulo}</p>
+                <button
+                  type="button"
+                  onClick={() => atualizarGaleria(galeria.filter((x) => x.id !== foto.id))}
+                  className="rounded p-1 text-slate-400 hover:text-rose-400 shrink-0"
+                  title="Remover foto"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
