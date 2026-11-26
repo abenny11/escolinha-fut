@@ -8,7 +8,7 @@ import { useAppRole } from '@/contexts/RoleContext';
 import type { AppRole } from '@/lib/types';
 
 const HOME_BY_ROLE: Record<AppRole, string> = {
-  admin: '/',
+  admin: '/dashboard',
   secretary: '/alunos',
   coach: '/turmas',
   guardian_portal: '/portal-pais',
@@ -56,7 +56,7 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-md space-y-6">
         <Link
-          href="/gremio-concordia"
+          href="/"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-[#38bdf8] transition"
         >
           <ArrowLeft className="size-4" /> Voltar para o site Grêmio Concórdia

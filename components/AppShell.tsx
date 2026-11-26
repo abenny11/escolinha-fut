@@ -8,7 +8,7 @@ import { useAppRole } from '@/contexts/RoleContext';
 import type { AppRole } from '@/lib/types';
 
 const ROUTE_PERMISSIONS: Record<string, AppRole[]> = {
-  '/': ['admin'],
+  '/dashboard': ['admin'],
   '/alunos': ['admin', 'secretary'],
   '/turmas': ['admin', 'secretary', 'coach'],
   '/torneios': ['admin', 'secretary', 'coach', 'guardian_portal'],
@@ -27,7 +27,7 @@ const ROUTE_PERMISSIONS: Record<string, AppRole[]> = {
 };
 
 const HOME_BY_ROLE: Record<AppRole, string> = {
-  admin: '/',
+  admin: '/dashboard',
   secretary: '/alunos',
   coach: '/turmas',
   guardian_portal: '/portal-pais',
@@ -38,6 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { currentRole, roleLabels } = useAppRole();
 
   const isPublicStandalone =
+    pathname === '/' ||
     pathname?.startsWith('/gremio-concordia') ||
     pathname?.startsWith('/login') ||
     pathname?.startsWith('/obrigado') ||

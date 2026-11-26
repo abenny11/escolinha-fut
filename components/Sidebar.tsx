@@ -51,7 +51,7 @@ export function Sidebar() {
 
   // Filtragem estrita de links por perfil (Permissionamento)
   const allNavItems = [
-    { href: '/', label: 'Dashboard & Indicadores', icon: LayoutDashboard, roles: ['admin'] },
+    { href: '/dashboard', label: 'Dashboard & Indicadores', icon: LayoutDashboard, roles: ['admin'] },
     { href: '/alunos', label: 'Alunos & Matrículas', icon: Users, roles: ['admin', 'secretary'] },
     { href: '/turmas', label: 'Agenda & Grade', icon: Trophy, roles: ['admin', 'secretary', 'coach'] },
     { href: '/torneios', label: 'Torneios & Súmulas', icon: Trophy, roles: ['admin', 'secretary', 'coach', 'guardian_portal'] },
@@ -63,7 +63,7 @@ export function Sidebar() {
     { href: '/desenvolvimento', label: 'Desenvolvimento Atleta', icon: Award, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/gamificacao', label: 'Evolução Técnica & Estrelas', icon: Sparkles, roles: ['admin', 'coach', 'guardian_portal'] },
     { href: '/portal-pais', label: 'Área do Responsável', icon: Users, roles: ['guardian_portal'] },
-    { href: '/gremio-concordia', label: 'Site / Landing Page', icon: Award, roles: ['admin', 'secretary', 'coach', 'guardian_portal'] },
+    { href: '/', label: 'Site / Landing Page', icon: Award, roles: ['admin', 'secretary', 'coach', 'guardian_portal'] },
     { href: '/configuracoes', label: 'Configurações', icon: Settings, roles: ['admin', 'secretary'] },
   ];
 
