@@ -1,4 +1,5 @@
 import { mockStudents } from './mock-data';
+import { syncFaixasToSupabase } from './supabase/sync';
 
 export interface FaixaNivel {
   ordem: number;
@@ -132,4 +133,5 @@ export function saveProgressosFaixas(lista: ProgressoAtleta[]) {
   } catch {
     // ignore
   }
+  void syncFaixasToSupabase(lista);
 }

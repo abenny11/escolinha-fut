@@ -1,3 +1,5 @@
+import { syncGaleriaToSupabase } from './supabase/sync';
+
 export interface GaleriaFoto {
   id: string;
   src: string;
@@ -88,6 +90,7 @@ export function saveGaleriaFotos(fotos: GaleriaFoto[]) {
   } catch {
     // ignore
   }
+  void syncGaleriaToSupabase(fotos);
 }
 
 export async function comprimirImagemGaleria(file: File, maxW = 1100, quality = 0.78): Promise<string> {

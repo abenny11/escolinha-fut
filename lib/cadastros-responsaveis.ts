@@ -1,3 +1,5 @@
+import { syncCadastrosToSupabase } from './supabase/sync';
+
 export type StatusCadastro = 'pendente' | 'aprovado' | 'recusado';
 
 export interface FichaCompletaCrianca {
@@ -83,6 +85,7 @@ export function saveCadastrosResponsaveis(lista: CadastroResponsavel[]) {
   } catch {
     // ignore
   }
+  void syncCadastrosToSupabase(lista);
 }
 
 export function registrarPreCadastro(dados: {
