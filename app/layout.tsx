@@ -1,16 +1,37 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppShell } from '@/components/AppShell';
 import { CookieBanner } from '@/components/CookieBanner';
 import { AnalyticsScript } from '@/components/AnalyticsScript';
+import { PwaInstaller } from '@/components/PwaInstaller';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
+export const viewport: Viewport = {
+  themeColor: '#050912',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://escolinha-fut.vercel.app'),
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Grêmio Concórdia',
+  },
+  icons: {
+    icon: [
+      { url: '/icones/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icones/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/icones/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   title: {
     default: 'Escola de Futebol Grêmio Concórdia — Gestão, Torneios & Súmulas',
     template: '%s | Grêmio Concórdia',
@@ -36,6 +57,7 @@ export default function RootLayout({
         <ThemeProvider>
           <RoleProvider>
             <AppShell>{children}</AppShell>
+            <PwaInstaller />
             <CookieBanner />
             <AnalyticsScript />
           </RoleProvider>
