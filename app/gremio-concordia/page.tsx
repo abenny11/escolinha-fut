@@ -9,6 +9,8 @@ import {
   Bus,
   CalendarCheck,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Loader2,
   MapPin,
@@ -65,6 +67,33 @@ const AVALIACOES = [
   { autor: 'Rodrigo Almeida (Pai Sub-13)', texto: 'Ambiente familiar, seguro e focado na formação do atleta e do cidadão.' },
 ];
 
+const GALERIA_FOTOS = [
+  {
+    src: '/galeria/gremio-1.jpg',
+    alt: 'Atletas da Escola de Futebol Grêmio Concórdia em avaliação oficial',
+    titulo: 'Avaliações e Integração com a Base do Grêmio',
+    desc: 'Atletas de Concórdia vivenciando a metodologia oficial do Grêmio Foot-Ball Porto Alegrense.',
+  },
+  {
+    src: '/galeria/gremio-2.jpg',
+    alt: 'Campo de futebol preparado para treinos e competições da escolinha',
+    titulo: 'Treinos 3x por Semana (4 a 15 anos)',
+    desc: 'Turmas organizadas do Sub-5 ao Sub-15 no Bairro São Cristóvão, próximo ao SENAI.',
+  },
+  {
+    src: '/galeria/gremio-3.jpg',
+    alt: 'Formação técnica e fundamentos de futebol para categorias de base',
+    titulo: 'Formação Técnica, Tática e Valores',
+    desc: 'Desenvolvimento completo do atleta: passe, domínio, finalização, respeito e trabalho em equipe.',
+  },
+  {
+    src: '/galeria/gremio-4.jpg',
+    alt: 'Disputa de partida em torneio infantil e liga interna',
+    titulo: 'Liga Interna, Torneios e Amistosos',
+    desc: 'Competições internas e regionais ao longo de todo o ano com súmula oficial e premiação.',
+  },
+];
+
 export default function GremioConcordiaLanding() {
   const router = useRouter();
   const [torneios, setTorneios] = useState<Torneio[]>([]);
@@ -74,6 +103,14 @@ export default function GremioConcordiaLanding() {
   const [turno, setTurno] = useState('Tarde');
   const [erroForm, setErroForm] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [slideIdx, setSlideIdx] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSlideIdx((prev) => (prev + 1) % GALERIA_FOTOS.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     try {
@@ -316,6 +353,81 @@ export default function GremioConcordiaLanding() {
               <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{item.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/* CARROSSEL DE IMAGENS (FOTOS DA ESCOLINHA E TREINOS)              */}
+      {/* ================================================================ */}
+      <section className="mx-auto max-w-6xl px-4 pb-14">
+        <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#0077b6]">Galeria Tricolor</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0b1320]">Nossa Escolinha em Ação</h2>
+          </div>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-bold text-[#0077b6] hover:underline flex items-center gap-1"
+          >
+            <Instagram className="size-3.5" /> Ver mais fotos no @ctgremioconcordia →
+          </a>
+        </div>
+
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-[#050912] shadow-lg">
+          <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={GALERIA_FOTOS[slideIdx].src}
+              alt={GALERIA_FOTOS[slideIdx].alt}
+              loading="lazy"
+              className="size-full object-cover transition-all duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050912] via-[#050912]/30 to-transparent" />
+
+            <div className="absolute bottom-4 left-4 right-16 sm:bottom-6 sm:left-6 text-white space-y-1">
+              <span className="inline-block rounded-full bg-[#009fe3] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                Foto {slideIdx + 1} de {GALERIA_FOTOS.length}
+              </span>
+              <h3 className="text-lg sm:text-2xl font-black text-white">{GALERIA_FOTOS[slideIdx].titulo}</h3>
+              <p className="text-xs sm:text-sm text-slate-200 max-w-xl">{GALERIA_FOTOS[slideIdx].desc}</p>
+            </div>
+
+            <button
+              type="button"
+              aria-label="Foto anterior"
+              onClick={() => setSlideIdx((prev) => (prev - 1 + GALERIA_FOTOS.length) % GALERIA_FOTOS.length)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/50 text-white hover:bg-[#009fe3] transition"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+            <button
+              type="button"
+              aria-label="Próxima foto"
+              onClick={() => setSlideIdx((prev) => (prev + 1) % GALERIA_FOTOS.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/50 text-white hover:bg-[#009fe3] transition"
+            >
+              <ChevronRight className="size-5" />
+            </button>
+          </div>
+
+          {/* Miniaturas */}
+          <div className="grid grid-cols-4 gap-2 bg-[#050912] p-3">
+            {GALERIA_FOTOS.map((foto, i) => (
+              <button
+                key={foto.src}
+                type="button"
+                onClick={() => setSlideIdx(i)}
+                className={`relative aspect-[16/9] overflow-hidden rounded-xl border-2 transition ${
+                  i === slideIdx ? 'border-[#009fe3] opacity-100' : 'border-transparent opacity-55 hover:opacity-90'
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={foto.src} alt={foto.alt} loading="lazy" className="size-full object-cover" />
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
