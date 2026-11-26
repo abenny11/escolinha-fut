@@ -783,7 +783,7 @@ export default function AlunosPage() {
             const pPct = totalP > 0 ? Math.round(((stScout?.passes_completed || 0) / totalP) * 100) : 100;
 
             const handleCopyWhatsApp = () => {
-              const msg = `📊 *Scout do Atleta - Escolinha Pro* ⚽\n\n` +
+              const msg = `📊 *Scout do Atleta - Grêmio Concórdia* ⚽\n\n` +
                 `👤 *Atleta:* ${scoutModalStudent.full_name}\n` +
                 `🏅 *Posição:* ${scoutModalStudent.position} | *Categoria:* ${scoutModalStudent.current_class?.name}\n` +
                 `⭐ *Nota da Partida:* ${stScout.overall_rating.toFixed(1)} / 10\n\n` +
@@ -1184,7 +1184,7 @@ export default function AlunosPage() {
 
                 {/* Footer do Modal */}
                 <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
-                  <span className="text-[11px] text-slate-400">Escolinha Pro • Scout Integrado</span>
+                  <span className="text-[11px] text-slate-400">Grêmio Concórdia • Scout Integrado</span>
                   <button
                     onClick={() => setScoutModalStudent(null)}
                     className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition"

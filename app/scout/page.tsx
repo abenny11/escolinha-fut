@@ -128,7 +128,7 @@ export default function ScoutPage() {
     const totalPasses = latestMatchScout.passes_completed + latestMatchScout.passes_missed;
     const passAccuracy = totalPasses > 0 ? Math.round((latestMatchScout.passes_completed / totalPasses) * 100) : 100;
 
-    const msg = `📊 *Scout do Atleta - Escolinha Pro* ⚽\n\n` +
+    const msg = `📊 *Scout do Atleta - Grêmio Concórdia* ⚽\n\n` +
       `👤 *Atleta:* ${selectedStudent.full_name}\n` +
       `🏅 *Posição:* ${selectedStudent.position} | *Categoria:* ${selectedStudent.current_class?.name}\n` +
       `🏟️ *Jogo:* ${latestMatchScout.opponent_context} (${latestMatchScout.match_date})\n` +
@@ -782,7 +782,7 @@ export default function ScoutPage() {
 
             {/* Rodapé do Card */}
             <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-              <span>⚽ Escolinha Pro Scout</span>
+              <span>⚽ Grêmio Concórdia Scout</span>
               <span className="text-amber-400 font-bold">Temporada 2026</span>
             </div>
           </div>

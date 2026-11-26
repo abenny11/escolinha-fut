@@ -1288,7 +1288,7 @@ function TorneioPainel({
       {/* Modal Súmula Oficial */}
       {jogoSumula && (
         <SumulaModal
-          escolaNome="Sportdesk Escolinha"
+          escolaNome="Escola de Futebol Grêmio Concórdia"
           torneio={torneio}
           jogo={jogoSumula}
           timeA={times.find((t) => t.id === jogoSumula.time_a)}

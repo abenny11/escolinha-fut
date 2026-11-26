@@ -55,7 +55,7 @@ export default function ComunicacaoOrganizacaoPage() {
       id: `ann-${Date.now()}`,
       title: newTitle,
       content: newContent,
-      author: 'Coordenação Sportdesk',
+      author: 'Coordenação Grêmio Concórdia',
       target_audience: newAudience,
       priority: newPriority,
       created_at: new Date().toISOString().split('T')[0],
@@ -96,7 +96,7 @@ export default function ComunicacaoOrganizacaoPage() {
             <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
               <Sparkles size={12} /> Rotina & Alinhamento
             </span>
-            <span className="text-xs text-slate-400">Sportdesk Equipe</span>
+            <span className="text-xs text-slate-400">Grêmio Concórdia Equipe</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
             Comunicação & Organização 📢

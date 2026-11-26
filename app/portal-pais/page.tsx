@@ -20,7 +20,7 @@ export default function PortalPaisPage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string>(mockStudents[0]?.id);
   const [copiedPix, setCopiedPix] = useState(false);
   const [showQrCard, setShowQrCard] = useState(false);
-  const [schoolName, setSchoolName] = useState('Escolinha Pro');
+  const [schoolName, setSchoolName] = useState('Grêmio Concórdia');
   const [schoolPix, setSchoolPix] = useState('pix@escolinhapro.com.br');
 
   useEffect(() => {

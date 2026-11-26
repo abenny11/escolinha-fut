@@ -419,7 +419,7 @@ export default function ConfiguracoesPage() {
               </div>
               <div className="truncate">
                 <span className="font-black text-slate-100 text-sm block leading-tight truncate">
-                  {config.tradeName || 'Escolinha Pro'}
+                  {config.tradeName || 'Grêmio Concórdia'}
                 </span>
                 <span className="text-[10px] text-emerald-400 font-semibold">Gestão & Performance</span>
               </div>

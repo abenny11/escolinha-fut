@@ -145,7 +145,7 @@ export default function DesenvolvimentoPage() {
   // Copiar relatório formatado para WhatsApp
   const handleCopyWhatsAppReport = () => {
     if (!latestAssessment) return;
-    const reportText = `⚽ *Boletim de Desenvolvimento do Atleta - Escolinha Pro* ⚽\n\n` +
+    const reportText = `⚽ *Boletim de Desenvolvimento do Atleta - Grêmio Concórdia* ⚽\n\n` +
       `👤 *Atleta:* ${selectedStudent.full_name}\n` +
       `🏅 *Posição:* ${selectedStudent.position} | *Categoria:* ${selectedStudent.current_class?.name}\n` +
       `📅 *Ciclo:* ${latestAssessment.cycle_name}\n` +
@@ -802,7 +802,7 @@ export default function DesenvolvimentoPage() {
                   ⚽
                 </div>
                 <div>
-                  <h3 className="font-black text-white text-lg">Escolinha Pro</h3>
+                  <h3 className="font-black text-white text-lg">Grêmio Concórdia</h3>
                   <p className="text-xs text-emerald-400 font-semibold">Boletim Pedagógico de Desenvolvimento Esportivo</p>
                 </div>
               </div>

@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const pendingCharges = mockCharges.filter(c => c.status === 'overdue' || c.status === 'pending');
   const kpis = mockManagementKPIs;
 
-  // Estado do Sportdesk Workflow (Onboarding das 3 Etapas)
+  // Estado do Grêmio Concórdia Workflow (Onboarding das 3 Etapas)
   const [step1Done, setStep1Done] = useState(false);
   const [step2Done, setStep2Done] = useState(false);
   const [step3Done, setStep3Done] = useState(false);
@@ -88,7 +88,7 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-              ⚽ Sportdesk Gestão
+              ⚽ Grêmio Concórdia Gestão
             </span>
             <span className="text-xs text-slate-400">Temporada 2026 Ativa</span>
           </div>
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                 )}
               </div>
               <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                Use o Sportdesk no dia a dia para acompanhar presença, pagamentos, ocupação, comunicação e indicadores.
+                Use o Grêmio Concórdia no dia a dia para acompanhar presença, pagamentos, ocupação, comunicação e indicadores.
               </p>
               <span className="text-[11px] text-purple-400 font-semibold mt-3 inline-block">
                 Ver indicadores abaixo ↓
@@ -367,9 +367,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Ações Rápidas Sportdesk */}
+      {/* Ações Rápidas Grêmio Concórdia */}
       <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-5">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Ações Rápidas Sportdesk</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Ações Rápidas Grêmio Concórdia</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Link
             href="/alunos"

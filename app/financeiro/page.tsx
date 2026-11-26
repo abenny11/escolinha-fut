@@ -88,7 +88,7 @@ export default function FinanceiroPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-              💵 Gestão Financeira Sportdesk
+              💵 Gestão Financeira Grêmio Concórdia
             </span>
             <span className="text-xs text-slate-400">Mensalidades & DRE</span>
           </div>

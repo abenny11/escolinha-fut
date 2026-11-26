@@ -28,7 +28,7 @@ export default function IndicadoresGestaoPage() {
             <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
               <Sparkles size={12} /> Painel Executivo
             </span>
-            <span className="text-xs text-slate-400">Sportdesk Analytics</span>
+            <span className="text-xs text-slate-400">Grêmio Concórdia Analytics</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
             Indicadores de Gestão 📈
@@ -184,7 +184,7 @@ export default function IndicadoresGestaoPage() {
           </div>
 
           <p className="text-xs text-slate-400 leading-relaxed">
-            O envio automatizado de lembretes no WhatsApp e cobrança Pix via Sportdesk reduziu a taxa de inadimplência em mais de 60% comparado a carnês físicos.
+            O envio automatizado de lembretes no WhatsApp e cobrança Pix via Grêmio Concórdia reduziu a taxa de inadimplência em mais de 60% comparado a carnês físicos.
           </p>
         </div>
       </div>
